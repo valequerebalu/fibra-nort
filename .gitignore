@@ -1,0 +1,32 @@
+# Dependencias (si usas Composer)
+vendor/
+
+# Archivos de configuración sensibles
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+tmp/
+
+# Cache
+cache/
+.cache/
+
+# Uploads generados por el sistema
+uploads/
+public/uploads/
+
+# Archivos temporales
+*.tmp
+*.swp
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
