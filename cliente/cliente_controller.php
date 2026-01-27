@@ -1,56 +1,51 @@
 <?php
+require_once __DIR__ . '/Cliente.class.php';
 
-// Simulamos las clases por ahora ya que no hay BD
-// require_once('../permiso/Permiso.class.php');
-// require_once('../cliente/Cliente.class.php');
+// Capturamos la operación (op) que envía el JS
+$operacion = $_POST['op'] ?? '';
 
-// --- PARTE 1: DATOS DE PRUEBA (MOCK DATA) ---
-// Pegamos la lista aquí para que esté disponible para la tabla
-$lista_clientes = [
-    [
-        "id" => 1,
-        "nombre" => "NICK ANTONY VELARDE RUIZ",
-        "documento" => "70021458",
-        "deuda" => "0.00",
-        "meses_deuda" => 0,
-        "dia_pago" => 1,
-        "tipo_facturacion" => "Postpago"
-    ],
-    [
-        "id" => 2,
-        "nombre" => "MILDRED WENDY CANAZA QUISPE",
-        "documento" => "70099589",
-        "deuda" => "10.00",
-        "meses_deuda" => 1,
-        "dia_pago" => 1,
-        "tipo_facturacion" => "Postpago"
-    ]
-];
+$objCliente = new Cliente();
 
-// --- PARTE 2: PROCESO DE ACCIONES (POST) ---
-// Solo entra aquí si viene una acción por AJAX
-if (isset($_POST['action'])) {
-    $action = $_POST['action'];
-    $data = ['estado' => 0, 'mensaje' => ''];
+switch ($operacion) {
+    case 'listar':
+        // Llamamos al método de la clase que ya tiene PDO y Singleton
+        $lista_clientes = $objCliente->listar_clientes();
+        require_once __DIR__ . '/cliente_tabla.php';
+        break;
 
-    switch ($action) {
-        case 'insertar':
-            // Aquí iría la lógica de $oCliente->insertar(...)
-            $data['estado'] = 1;
-            $data['mensaje'] = 'Cliente registrado correctamente (Simulado).';
-            break;
+  case 'insertar':
+    $action = $_POST['action']; 
 
-        case 'eliminar':
-            $id = intval($_POST['hdd_cliente_id']);
-            $data['estado'] = 1;
-            $data['mensaje'] = 'Cliente ID ' . $id . ' eliminado (Simulado).';
-            break;
+    // Capturamos los datos del POST
+    $document_type_id = $_POST['document_type_id'];
+    $document_number  = $_POST['document_number'];
+    $full_name        = $_POST['full_name'];
+    $phone            = $_POST['phone'] ?? null;
+    $email            = $_POST['email'] ?? null;
+    $address          = $_POST['address'];
+    $reference        = $_POST['reference'] ?? '';
+    
+    // Valores por defecto para la lógica de negocio
+    $state_id   = 1; // Activo
+    $created_by = 1; // ID del usuario (luego lo sacarás de $_SESSION)
 
-        default:
-            $data['mensaje'] = 'Acción no reconocida: ' . $action;
-            break;
+    if ($action == 'I') {
+        // Llamamos al método insertar con los datos reales
+        $res = $objCliente->insertar(
+            $document_type_id,
+            $document_number,
+            $full_name,
+            $phone,
+            $email,
+            $address,
+            $reference,
+            $state_id,
+            $created_by
+        );
+        echo $res; // Esto devuelve "1" si el PDO ejecutó correctamente
+    } else {
+        // Aquí iría la lógica de editar cuando la necesites
+        // echo $objCliente->editar($id, ...);
     }
-
-    echo json_encode($data);
-    exit; // Importante detener la ejecución aquí si es una respuesta JSON
+    break;
 }
