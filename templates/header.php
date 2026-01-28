@@ -6,8 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- AdminLTE -->
-  <link rel="stylesheet" href="assets/adminlte/plugins/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="assets/adminlte/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="/fibra-nort/public/assets/adminlte/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/fibra-nort/public/assets/adminlte/dist/css/adminlte.min.css">
+  
+  <!-- DataTables CSS personalizado -->
+  <link rel="stylesheet" href="/fibra-nort/cliente/datatables-custom.css">
+  
+  <!-- jQuery debe cargarse antes de los scripts de los módulos -->
+  <script src="/fibra-nort/public/assets/adminlte/plugins/jquery/jquery.min.js"></script>
+  
+  <!-- Inicialización global de DataTables -->
+  <script src="/fibra-nort/public/assets/js/datatable-init.js"></script>
 </head>
 
 <body class="hold-transition sidebar-mini">

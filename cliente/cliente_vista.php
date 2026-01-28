@@ -6,35 +6,36 @@ $root = $_SERVER['DOCUMENT_ROOT'] . '/fibra-nort';
 require_once $root . '/cliente/Cliente.class.php';
 $objCliente = new Cliente();
 
-// 3. Obtenemos los tipos de documento ANTES de cualquier HTML
-$tipos_doc = $objCliente->obtener_tipos_documento();
 ?>
 
 <section class="content-header">
-    <h1>Clientes <small>Listado de clientes</small></h1>
-</section>
-
-<section class="content">
-    <div class="box">
-        <div class="box-header">
-            <?php require_once 'cliente_form.php'; ?>
-            <button class="btn btn-primary" onclick="cliente_form('I', 0)">
+    <div class="row align-items-center">
+        <div class="col-sm-6">
+            <h1><i class="fa fa-users text-primary"></i> Clientes</h1>
+            <h3 id="titulo_cliente" style="color: #666; margin-top: 10px;">Listado de clientes</h3>
+        </div>
+        <div class="col-sm-6 text-right">
+            <button class="btn btn-primary btn-lg" onclick="cargarFormularioCliente('I', 0);">
                 <i class="fa fa-plus"></i> Nuevo Cliente
             </button>
         </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="box box-primary">
+      
         <div class="box-body">
-            <?php
-            require_once 'cliente_controller.php'; // Aquí se crea $lista_clientes
-            ?>
             <div id="contenedor_tabla_clientes">
-                <?php require_once('cliente_tabla.php'); ?>
             </div>
         </div>
     </div>
 </section>
 
-<div id="modal_cliente_container"></div> 
+<div id="modal_cliente_container"></div>
 
-<script src="/fibra-nort/cliente/cliente.js"></script>
+<script src="/fibra-nort/cliente/cliente.js"></script> 
+
+
 
 

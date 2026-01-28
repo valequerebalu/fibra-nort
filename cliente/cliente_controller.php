@@ -13,23 +13,58 @@ switch ($operacion) {
         require_once __DIR__ . '/cliente_tabla.php';
         break;
 
-  case 'insertar':
-    $action = $_POST['action']; 
+    case 'form':
+        // Obtenemos los tipos de documento para el formulario
+        $tipos_doc = $objCliente->obtener_tipos_documento();
+        // Debug: verificar si hay datos
+        error_log('tipos_doc: ' . json_encode($tipos_doc));
+        require_once __DIR__ . '/cliente_form.php';
+        break;
 
-    // Capturamos los datos del POST
-    $document_type_id = $_POST['document_type_id'];
-    $document_number  = $_POST['document_number'];
-    $full_name        = $_POST['full_name'];
-    $phone            = $_POST['phone'] ?? null;
-    $email            = $_POST['email'] ?? null;
-    $address          = $_POST['address'];
-    $reference        = $_POST['reference'] ?? '';
-    
-    // Valores por defecto para la lógica de negocio
-    $state_id   = 1; // Activo
-    $created_by = 1; // ID del usuario (luego lo sacarás de $_SESSION)
+    case 'obtener':
+        // Obtener datos de un cliente específico
+        $id = $_POST['id'] ?? null;
+        
+        if (!$id) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'ID de cliente no especificado'
+            ]);
+            break;
+        }
+        
+        $cliente = $objCliente->obtener_por_id($id);
+        
+        header('Content-Type: application/json');
+        if ($cliente) {
+            echo json_encode([
+                'estado' => 1,
+                'mensaje' => 'Cliente obtenido correctamente',
+                'data' => $cliente
+            ]);
+        } else {
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'Cliente no encontrado'
+            ]);
+        }
+        break;
 
-    if ($action == 'I') {
+    case 'insertar':
+        // Capturamos los datos del POST
+        $document_type_id = $_POST['document_type_id'];
+        $document_number  = $_POST['document_number'];
+        $full_name        = $_POST['full_name'];
+        $phone            = $_POST['phone'] ?? null;
+        $email            = $_POST['email'] ?? null;
+        $address          = $_POST['address'];
+        $reference        = $_POST['reference'] ?? '';
+
+        // Valores por defecto para la lógica de negocio
+        $state_id   = 1; // Activo
+        $created_by = 1; // ID del usuario (luego lo sacarás de $_SESSION)
+
         // Llamamos al método insertar con los datos reales
         $res = $objCliente->insertar(
             $document_type_id,
@@ -42,10 +77,99 @@ switch ($operacion) {
             $state_id,
             $created_by
         );
-        echo $res; // Esto devuelve "1" si el PDO ejecutó correctamente
-    } else {
-        // Aquí iría la lógica de editar cuando la necesites
-        // echo $objCliente->editar($id, ...);
-    }
-    break;
+        
+        header('Content-Type: application/json');
+        if ($res) {
+            echo json_encode([
+                'estado' => 1,
+                'mensaje' => 'Cliente insertado correctamente'
+            ]);
+        } else {
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'Error al insertar el cliente'
+            ]);
+        }
+        break;
+
+    case 'editar':
+        // Obtener el ID del cliente a editar
+        $id = $_POST['id'] ?? null;
+        
+        if (!$id) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'ID de cliente no especificado'
+            ]);
+            break;
+        }
+        
+        // Capturamos los datos del POST
+        $document_type_id = $_POST['document_type_id'];
+        $document_number  = $_POST['document_number'];
+        $full_name        = $_POST['full_name'];
+        $phone            = $_POST['phone'] ?? null;
+        $email            = $_POST['email'] ?? null;
+        $address          = $_POST['address'];
+        $reference        = $_POST['reference'] ?? '';
+        
+        // Valores por defecto para la lógica de negocio
+        $state_id = 1; // Activo
+        
+        // Llamamos al método editar con los datos reales
+        $res = $objCliente->editar(
+            $id,
+            $document_type_id,
+            $document_number,
+            $full_name,
+            $phone,
+            $email,
+            $address,
+            $reference,
+            $state_id
+        );
+        
+        header('Content-Type: application/json');
+        if ($res) {
+            echo json_encode([
+                'estado' => 1,
+                'mensaje' => 'Cliente actualizado correctamente'
+            ]);
+        } else {
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'Error al actualizar el cliente'
+            ]);
+        }
+        break;
+    case 'eliminar':
+        // Obtener el ID del cliente a eliminar
+        $id = $_POST['id'] ?? null;
+        
+        if (!$id) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'ID de cliente no especificado'
+            ]);
+            break;
+        }
+        
+        // Llamamos al método eliminar
+        $res = $objCliente->eliminar($id);
+        
+        header('Content-Type: application/json');
+        if ($res) {
+            echo json_encode([
+                'estado' => 1,
+                'mensaje' => 'Cliente eliminado correctamente'
+            ]);
+        } else {
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'Error al eliminar el cliente'
+            ]);
+        }
+        break;
 }

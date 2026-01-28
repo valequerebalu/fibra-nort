@@ -1,4 +1,4 @@
-<table id="tabla_clientes" class="table table-bordered table-hover table-striped">
+<table id="tabla_ordenes" class="table table-bordered table-hover table-striped">
     <thead class="bg-primary">
         <tr>
             <th style="width: 10px;"><input type="checkbox" id="check_all"></th>
