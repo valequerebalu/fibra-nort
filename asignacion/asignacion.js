@@ -27,5 +27,34 @@ function listarAsignaciones() {
 
 function asignacionForm(action, id) {
 
-    let operacion = (action === 'I' ? 'insertar' : 'editar');
+    if(action === 'A') {
+        cargarModalAsignacion('A', id);
+    }
+}
+
+function cargarModalAsignacion(action, id) {
+    let operacion = (action === 'A' ? 'asignar' : '');
+    $.ajax({
+        url: "/fibra-nort/asignacion/asignacion_controller.php",
+        type: "POST",
+        data: { op: "form", action: action, id: id },
+        success: function (response) {
+            // Inyectamos el HTML del formulario dentro del contenedor
+            $("#modal_asignacion_container").html(response);
+
+            // Guardar operación e id directamente
+            $("#modal_registro_asignacion")
+                .data("operacion", operacion)
+                .data("id", id);
+
+            // Resetear o actualizar el título
+            if (action === 'A') {
+                $("#titulo_asignacion").text("Asignar Técnico");
+            }   
+            $("#modal_registro_asignacion").modal("show");
+        },
+        error: function () {
+            console.error("Error al cargar el formulario de asignación");
+        },
+    });
 }
