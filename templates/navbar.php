@@ -36,6 +36,12 @@
                         <p>Asignación de Técnicos</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/fibra-nort/public/?view=planes" class="nav-link">
+                        <i class="nav-icon fas fa-layer-group"></i>
+                        <p>Gestión de Planes</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
