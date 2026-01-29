@@ -7,14 +7,12 @@ function listarAsignaciones() {
         type: "POST",
         data: { op: "listar" },
         success: function (response) {
-            // Inyectamos el HTML generado por asignacion_tabla.php dentro del contenedor
             $("#contenedor_tabla_asignacion").html(response);
-            // Inicializar DataTables con la función global 
             inicializarDataTable('#tabla_asignacion', {
                 columnDefs: [
                     {       
                         targets: [0, 8], // Columnas de checkbox y acciones
-                        orderable: false
+                        orderable: false,
                     }
                 ]
             });
@@ -26,8 +24,9 @@ function listarAsignaciones() {
 }
 
 function asignacionForm(action, id) {
-
+ 
     if(action === 'A') {
+       
         cargarModalAsignacion('A', id);
     }
 }
@@ -39,22 +38,27 @@ function cargarModalAsignacion(action, id) {
         type: "POST",
         data: { op: "form", action: action, id: id },
         success: function (response) {
-            // Inyectamos el HTML del formulario dentro del contenedor
+            console.log("Respuesta recibida del servidor");
+    
             $("#modal_asignacion_container").html(response);
-
-            // Guardar operación e id directamente
-            $("#modal_registro_asignacion")
+            $("#modal_asignacion_tecnico")
                 .data("operacion", operacion)
                 .data("id", id);
 
-            // Resetear o actualizar el título
             if (action === 'A') {
                 $("#titulo_asignacion").text("Asignar Técnico");
-            }   
-            $("#modal_registro_asignacion").modal("show");
+            }
+            
+            // Abrir el modal después de un pequeño delay
+            setTimeout(function() {
+                $("#modal_asignacion_tecnico").modal("show");
+                console.log("Modal abierto");
+            }, 100);
         },
-        error: function () {
-            console.error("Error al cargar el formulario de asignación");
+        error: function (xhr, status, error) {
+            console.error("Error al cargar el formulario de asignación:", error);
+            console.error("Status:", status);
+            console.error("Response:", xhr.responseText);
         },
     });
 }

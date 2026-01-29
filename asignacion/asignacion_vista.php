@@ -29,4 +29,4 @@ $objAsignacion = new Asignacion();
 
 <div id="modal_asignacion_container"></div>
 
-<script src="/fibra-nort/asignacion/asignacion.js"></script> 
+<script src="/fibra-nort/asignacion/asignacion.js"></script>

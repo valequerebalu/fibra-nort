@@ -4,7 +4,7 @@
             <form id="form_asignacion_tecnico" method="POST">
 
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title"><i class="fa fa-user-check"></i> Asignar Técnico - <span id="codigo_orden">ORD-000</span></h4>
+                    <h4 class="modal-title"><i class="fa fa-user-check"></i> Asignar Técnico - <span id="codigo_orden"><?php echo $orden_data['code_orders'] ?? 'ORD-000'; ?></span></h4>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -13,22 +13,29 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label><strong>Cliente:</strong></label>
-                        <p id="cliente_nombre" style="color: #666; margin: 0;">---</p>
+                        <p id="cliente_nombre" style="color: #666; margin: 0;"><?php echo $orden_data['client'] ?? '---'; ?></p>
                     </div>
 
                     <div class="form-group">
                         <label><strong>Fecha:</strong></label>
-                        <p id="fecha_orden" style="color: #666; margin: 0;">---</p>
+                        <p id="fecha_orden" style="color: #666; margin: 0;"><?php echo $orden_data['scheduled_date'] ?? '---'; ?></p>
                     </div>
 
                     <div class="form-group">
                         <label for="technician_id"><strong>Seleccionar Técnico</strong></label>
                         <select id="technician_id" name="technician_id" class="form-control" required>
                             <option value="">-- Seleccione un técnico --</option>
+                            <?php if (isset($tecnicos) && is_array($tecnicos)): ?>
+                                <?php foreach ($tecnicos as $tecnico): ?>
+                                    <option value="<?php echo $tecnico['id']; ?>">
+                                        <?php echo $tecnico['name']; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </select>
                     </div>
 
-                    <input type="hidden" id="asignacion_id" name="asignacion_id">
+                    <input type="hidden" id="asignacion_id" name="asignacion_id" value="<?php echo $orden_data['id'] ?? ''; ?>">
                 </div>
 
                 <div class="modal-footer">
@@ -39,5 +46,4 @@
         </div>
     </div>
 </div>
-
 <script src="/fibra-nort/asignacion/asignacion_form.js"></script>
