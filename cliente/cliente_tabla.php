@@ -4,7 +4,7 @@
             <th style="width: 10px;"><input type="checkbox" id="check_all"></th>
             <th style="width: 20px;">#</th>
             <th>ID</th>
-            <th>Nombres y apellidos/Raz. Social</th>
+            <th>Nombres Completos/Raz. Social</th>
             <th>Nro. Documento</th>
             <th>Telefono</th>
             <th>Email</th>
@@ -30,7 +30,7 @@
                     </td>
                     <td>
                         <?php echo $cliente['full_name']; ?></td>
-
+            
                     <td><?php echo $cliente['document_number'] ?? '---'; ?></td>
                     <td><?php echo $cliente['phone'] ?? '---'; ?></td>
                     <td><?php echo $cliente['email'] ?? '---'; ?></td>

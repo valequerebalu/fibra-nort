@@ -27,6 +27,12 @@
             <p>Ordenes</p>
           </a>
         </li>
+          <li class="nav-item">
+          <a href="/fibra-nort/public/?view=asignacion" class="nav-link">
+            <i class="nav-icon fas fa-user-cog"></i>
+            <p>Asignación de Técnicos</p>
+          </a>
+        </li>
 
       </ul>
     </nav>

@@ -32,10 +32,11 @@ $(document).on("submit", "#form_registro_cliente", function (e) {
 
   let formData = $(this).serialize();
   let modal = $("#modal_registro_cliente");
-  let action = modal.data("action") || "I";
+  
+  // Usar la operación ya determinada (sin conversiones redundantes)
+  let operacion = modal.data("operacion") || "insertar";
   let id = modal.data("id") || 0;
 
-  let operacion = (action == "I" ? "insertar" : "editar");
   formData += "&op=" + operacion + "&id=" + id;
 
   $.ajax({

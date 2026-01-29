@@ -116,6 +116,7 @@ switch ($operacion) {
         
         // Valores por defecto para la lógica de negocio
         $state_id = 1; // Activo
+        $updated_by = 1;
         
         // Llamamos al método editar con los datos reales
         $res = $objCliente->editar(
@@ -127,7 +128,8 @@ switch ($operacion) {
             $email,
             $address,
             $reference,
-            $state_id
+            $state_id,
+            $updated_by
         );
         
         header('Content-Type: application/json');

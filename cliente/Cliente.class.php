@@ -17,7 +17,8 @@ class Cliente
             $sql = "SELECT 
                         id, 
                         code_clients, 
-                        full_name, 
+                        concat(name_or_company_name, ' ', paternal_surname, ' ', maternal_surname) as full_name,
+                    
                         document_number, 
                         phone, 
                         email, 
@@ -51,7 +52,7 @@ class Cliente
                         id,
                         document_type_id,
                         document_number,
-                        full_name,
+                        name_or_company_name,
                         phone,
                         email,
                         address,
@@ -59,11 +60,11 @@ class Cliente
                         client_state_id as status
                     FROM clients
                     WHERE id = :id";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-            
+
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             return null;
@@ -129,7 +130,7 @@ class Cliente
         }
     }
 
-    public function editar($id, $doc_type_id, $doc_num, $full_name, $phone, $email, $address, $reference, $state_id)
+    public function editar($id, $doc_type_id, $doc_num, $full_name, $phone, $email, $address, $reference, $state_id, $updated_by)
     {
         $this->db->beginTransaction();
         try {
@@ -141,8 +142,9 @@ class Cliente
                         email = :email, 
                         address = :address, 
                         reference = :ref, 
-                        client_state_id = :state,
-                        updated_at = NOW()
+                        client_state_id = :state,                 
+                        updated_at = NOW(),
+                        updated_by = :updated_by
                     WHERE id = :id";
 
             $sentencia = $this->db->prepare($sql);
@@ -155,7 +157,7 @@ class Cliente
             $sentencia->bindParam(":address", $address, PDO::PARAM_STR);
             $sentencia->bindParam(":ref", $reference, PDO::PARAM_STR);
             $sentencia->bindParam(":state", $state_id, PDO::PARAM_INT);
-
+            $sentencia->bindParam(":updated_by", $updated_by, PDO::PARAM_INT);
             $result = $sentencia->execute();
             $this->db->commit();
 

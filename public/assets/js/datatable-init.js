@@ -16,7 +16,10 @@ function inicializarDataTable(selector, opciones = {}) {
     responsive: true,
     autoWidth: false,
     stateSave: true,
-    pageLength: 10
+    pageLength: 25,
+    paging: true,
+    info: true,
+    searching: true
   };
 
   // Combinar configuración base con opciones personalizadas
@@ -30,6 +33,7 @@ function inicializarDataTable(selector, opciones = {}) {
   // Inicializar DataTable con la configuración
   return $(selector).DataTable(config);
 }
+
 
 /**
  * Reinicializar DataTable después de cambios en el DOM

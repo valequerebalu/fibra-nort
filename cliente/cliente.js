@@ -29,7 +29,8 @@ function listarClientes() {
   });
 }
 function cargarFormularioCliente(action, id) {
-  // Llamar al formulario de clientes (modal), inyectarlo en modal_cliente_container y levantar el modal
+
+  let operacion = (action === 'I' ? 'insertar' : 'editar');
 
   $.ajax({
     url: "/fibra-nort/cliente/cliente_controller.php",
@@ -38,7 +39,11 @@ function cargarFormularioCliente(action, id) {
     success: function (response) {
       // Inyectamos el HTML del formulario dentro del contenedor
       $("#modal_cliente_container").html(response);
-      $("#modal_registro_cliente").data("action", action).data("id", id);
+      
+      // Guardar operación e id directamente
+      $("#modal_registro_cliente")
+        .data("operacion", operacion)
+        .data("id", id);
       
       // Resetear o actualizar el título
       if (action === 'I') {

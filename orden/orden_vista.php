@@ -14,7 +14,7 @@ $objOrden = new Orden();
             <h3 id="titulo_orden" style="color: #666; margin-top: 10px;">Listado de ordenes de Venta</h3>
         </div>
         <div class="col-sm-6 text-right">
-            <button class="btn btn-primary btn-lg" onclick="">
+            <button class="btn btn-primary btn-lg" onclick="cargarFormularioOrden('I', 0);">
                 <i class="fa fa-plus"></i> Nueva Orden
             </button>
         </div>
