@@ -2,7 +2,23 @@ $(document).ready(function () {
   // Los event listeners se manejan con la función cliente_form() desde onclick
 });
 
-
+$(function () {
+  // Inicializar calendario para Fecha Nacimiento
+  $("#fecha_nacimiento").datetimepicker({
+    format: "YYYY-MM-DD",
+    icons: {
+      time: "fa fa-clock",
+      date: "fa fa-calendar",
+      up: "fa fa-arrow-up",
+      down: "fa fa-arrow-down",
+      previous: "fa fa-chevron-left",
+      next: "fa fa-chevron-right",
+      today: "fa fa-calendar-check",
+      clear: "fa fa-trash",
+      close: "fa fa-times",
+    },
+  });
+});
 // Event delegation para elementos dinámicos del formulario
 $(document).on("change", "#document_type_id", function () {
   let tipoDoc = $(this).val();
@@ -32,7 +48,7 @@ $(document).on("submit", "#form_registro_cliente", function (e) {
 
   let formData = $(this).serialize();
   let modal = $("#modal_registro_cliente");
-  
+
   // Usar la operación ya determinada (sin conversiones redundantes)
   let operacion = modal.data("operacion") || "insertar";
   let id = modal.data("id") || 0;

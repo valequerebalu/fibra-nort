@@ -24,7 +24,7 @@ switch ($operacion) {
     case 'obtener':
         // Obtener datos de un cliente específico
         $id = $_POST['id'] ?? null;
-        
+
         if (!$id) {
             header('Content-Type: application/json');
             echo json_encode([
@@ -33,9 +33,9 @@ switch ($operacion) {
             ]);
             break;
         }
-        
+
         $cliente = $objCliente->obtener_por_id($id);
-        
+
         header('Content-Type: application/json');
         if ($cliente) {
             echo json_encode([
@@ -55,7 +55,10 @@ switch ($operacion) {
         // Capturamos los datos del POST
         $document_type_id = $_POST['document_type_id'];
         $document_number  = $_POST['document_number'];
-        $full_name        = $_POST['full_name'];
+        $name_or_company_name = $_POST['name_or_company_name'];
+        $maternal_surname = $_POST['maternal_surname'];
+        $paternal_surname = $_POST['paternal_surname'];
+        $sex              = $_POST['sex'];
         $phone            = $_POST['phone'] ?? null;
         $email            = $_POST['email'] ?? null;
         $address          = $_POST['address'];
@@ -69,7 +72,10 @@ switch ($operacion) {
         $res = $objCliente->insertar(
             $document_type_id,
             $document_number,
-            $full_name,
+            $name_or_company_name,
+            $maternal_surname,
+            $paternal_surname,
+            $sex,
             $phone,
             $email,
             $address,
@@ -77,7 +83,7 @@ switch ($operacion) {
             $state_id,
             $created_by
         );
-        
+
         header('Content-Type: application/json');
         if ($res) {
             echo json_encode([
@@ -95,7 +101,7 @@ switch ($operacion) {
     case 'editar':
         // Obtener el ID del cliente a editar
         $id = $_POST['id'] ?? null;
-        
+
         if (!$id) {
             header('Content-Type: application/json');
             echo json_encode([
@@ -104,20 +110,23 @@ switch ($operacion) {
             ]);
             break;
         }
-        
+
         // Capturamos los datos del POST
         $document_type_id = $_POST['document_type_id'];
         $document_number  = $_POST['document_number'];
-        $full_name        = $_POST['full_name'];
+        $name_or_company_name = $_POST['name_or_company_name'];
+        $maternal_surname = $_POST['maternal_surname'];
+        $paternal_surname = $_POST['paternal_surname'];
+        $sex              = $_POST['sex'];
         $phone            = $_POST['phone'] ?? null;
         $email            = $_POST['email'] ?? null;
         $address          = $_POST['address'];
         $reference        = $_POST['reference'] ?? '';
-        
+
         // Valores por defecto para la lógica de negocio
         $state_id = 1; // Activo
         $updated_by = 1;
-        
+
         // Llamamos al método editar con los datos reales
         $res = $objCliente->editar(
             $id,
@@ -131,7 +140,7 @@ switch ($operacion) {
             $state_id,
             $updated_by
         );
-        
+
         header('Content-Type: application/json');
         if ($res) {
             echo json_encode([
@@ -148,7 +157,7 @@ switch ($operacion) {
     case 'eliminar':
         // Obtener el ID del cliente a eliminar
         $id = $_POST['id'] ?? null;
-        
+
         if (!$id) {
             header('Content-Type: application/json');
             echo json_encode([
@@ -157,10 +166,10 @@ switch ($operacion) {
             ]);
             break;
         }
-        
+
         // Llamamos al método eliminar
         $res = $objCliente->eliminar($id);
-        
+
         header('Content-Type: application/json');
         if ($res) {
             echo json_encode([
