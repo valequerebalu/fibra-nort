@@ -78,11 +78,12 @@ function cargarDatosporId(code_order) {
       if (response.estado == 1) {
         let orden = response.data;
         // Poblar los inputs del formulario con los datos del cliente
-        $("#name_or_company_name").val(orden.name_or_company_name);
-        $("#paternal_surname").val(orden.paternal_surname);
-        $("#maternal_surname").val(orden.maternal_surname);
-        $("#date_birth").val(orden.date_birth);
-        $("#id_cliente").val(orden.id);
+        $("#order_id").val(orden.order_id);
+        $("#client_name").val(orden.client_name);
+        $("#document_number").val(orden.document_number);
+        $("#plan").val(orden.name);
+        $("#client_id").val(orden.client_id);
+        $("#plan_id").val(orden.plan_id);
       } else {
         console.error(
           "Error al obtener datos del cliente por DNI: " + response.mensaje,

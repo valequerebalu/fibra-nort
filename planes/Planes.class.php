@@ -13,20 +13,29 @@ class Planes
     {
         try {
             $stmt = $this->db->prepare("SELECT cp.id,
-                                                cp.code_client_plan ,
+                                                cp.code_client_plan,
+                                                so.code_service_orders,
                                                 c.document_number,
                                                 cp.client_id,
                                                 concat(c.name_or_company_name, ' ', c.paternal_surname, ' ', c.maternal_surname) as client_name,
                                                 cp.plan_id,
                                                 p.name as plan_name,
-                                                p.monthly_price,
-                                                p.speed_mbps,
+                                                cp.invoice_type,
+                                                cp.router_serial,
+                                                cp.router_model,
+                                                cp.ip_address,
+                                                cp.mac_address,
+                                                cp.wifi_ssid,
+                                                cp.wifi_password,
+                                                cp.service_status,
+                                                cp.installed_at,
                                                 cp.start_date,
                                                 cp.end_date,
                                                 cp.status
                                             from client_plans cp
                                             inner join clients c on cp.client_id = c.id
                                             inner join plans p on cp.plan_id = p.id
+                                            left join service_orders so on cp.service_order_id = so.id
                                             where cp.status = 1");
             $stmt->execute();
 
@@ -46,7 +55,7 @@ class Planes
 
     public function obtener_nodo()
     {
-         try {
+        try {
             $sql = "SELECT id, name FROM nodes WHERE status = 1";
             $sentencia = $this->db->prepare($sql);
             $sentencia->execute();
@@ -63,6 +72,7 @@ class Planes
     public function obtener_orden_code($code_order)
     {
         $stmt = $this->db->prepare("SELECT
+                                so.id as order_id,
                                 so.client_id,
                                 concat(c.name_or_company_name, ' ', c.paternal_surname, ' ', c.maternal_surname) as client_name,
                                 c.document_number,
@@ -75,5 +85,169 @@ class Planes
         $stmt->bindParam(':code_order', $code_order, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function insertar_plan(
+        $client_id,
+        $plan_id,
+        $nodo_id,
+        $billing_day,
+        $start_date,
+        $created_by,
+        $order_id,
+        $invoice_type,
+        $router_serial,
+        $router_model,
+        $ip_address,
+        $mac_address,
+        $wifi_ssid,
+        $wifi_password,
+        $installed_at
+    ) {
+        try {
+            $stmt = $this->db->prepare("INSERT INTO client_plans 
+                (client_id, plan_id, node_id, billing_day, start_date, created_by, service_order_id, invoice_type, router_serial, router_model, ip_address, mac_address, wifi_ssid, wifi_password, installed_at, status) 
+                VALUES 
+                (:client_id, :plan_id, :nodo_id, :billing_day, :start_date, :created_by, :order_id, :invoice_type, :router_serial, :router_model, :ip_address, :mac_address, :wifi_ssid, :wifi_password, :installed_at, 1)");
+
+            $stmt->bindParam(':client_id', $client_id);
+            $stmt->bindParam(':plan_id', $plan_id);
+            $stmt->bindParam(':nodo_id', $nodo_id);
+            $stmt->bindParam(':billing_day', $billing_day);
+            $stmt->bindParam(':start_date', $start_date);
+            $stmt->bindParam(':created_by', $created_by);
+            $stmt->bindParam(':order_id', $order_id);
+            $stmt->bindParam(':invoice_type', $invoice_type);
+            $stmt->bindParam(':router_serial', $router_serial);
+            $stmt->bindParam(':router_model', $router_model);
+            $stmt->bindParam(':ip_address', $ip_address);
+            $stmt->bindParam(':mac_address', $mac_address);
+            $stmt->bindParam(':wifi_ssid', $wifi_ssid);
+            $stmt->bindParam(':wifi_password', $wifi_password);
+            $stmt->bindParam(':installed_at', $installed_at);
+
+            if ($stmt->execute()) {
+                return [
+                    'estado' => 1,
+                    'mensaje' => 'Plan insertado correctamente'
+                ];
+            } else {
+                return [
+                    'estado' => 0,
+                    'mensaje' => 'Error al insertar el plan'
+                ];
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function obtener_por_id($id)
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT cp.service_order_id as order_id,
+                                        so.code_service_orders as code_orders,
+                                        cp.client_id,
+                                        concat(c.name_or_company_name, ' ', c.paternal_surname, ' ', c.maternal_surname) as client_name,
+                                        c.document_number,
+                                        cp.plan_id,
+                                        p.name as plan_name,
+                                        cp.node_id,
+                                        n.name as node_name,
+                                        cp.billing_day,
+                                        cp.start_date,
+                                        cp.installed_at,
+                                        cp.invoice_type,
+                                        cp.router_serial,
+                                        cp.router_model,
+                                        cp.ip_address,
+                                        cp.mac_address,
+                                        cp.wifi_ssid,
+                                        cp.wifi_password
+                                 from client_plans cp
+                                inner join service_orders so on cp.service_order_id=so.id
+                                inner join clients c on cp.client_id=c.id
+                                inner join plans p on cp.plan_id = p.id
+                                inner join nodes n on cp.node_id=n.id
+                                where cp.id = :id");
+            
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                return $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+
+            return null;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function actualizar_plan(
+        $id,
+        $client_id,
+        $plan_id,
+        $nodo_id,
+        $billing_day,
+        $start_date,
+        $updated_by,
+        $invoice_type,
+        $router_serial,
+        $router_model,
+        $ip_address,
+        $mac_address,
+        $wifi_ssid,
+        $wifi_password,
+        $installed_at
+    ) {
+        try {
+            $stmt = $this->db->prepare("UPDATE client_plans SET 
+                client_id = :client_id,
+                plan_id = :plan_id,
+                node_id = :nodo_id,
+                billing_day = :billing_day,
+                start_date = :start_date,
+                updated_by = :updated_by,
+                invoice_type = :invoice_type,
+                router_serial = :router_serial,
+                router_model = :router_model,
+                ip_address = :ip_address,
+                mac_address = :mac_address,
+                wifi_ssid = :wifi_ssid,
+                wifi_password = :wifi_password,
+                installed_at = :installed_at
+                WHERE id = :id");
+
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':client_id', $client_id);
+            $stmt->bindParam(':plan_id', $plan_id);
+            $stmt->bindParam(':nodo_id', $nodo_id);
+            $stmt->bindParam(':billing_day', $billing_day);
+            $stmt->bindParam(':start_date', $start_date);
+            $stmt->bindParam(':updated_by', $updated_by);
+            $stmt->bindParam(':invoice_type', $invoice_type);
+            $stmt->bindParam(':router_serial', $router_serial);
+            $stmt->bindParam(':router_model', $router_model);
+            $stmt->bindParam(':ip_address', $ip_address);
+            $stmt->bindParam(':mac_address', $mac_address);
+            $stmt->bindParam(':wifi_ssid', $wifi_ssid);
+            $stmt->bindParam(':wifi_password', $wifi_password);
+            $stmt->bindParam(':installed_at', $installed_at);
+
+            return $stmt->execute();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function eliminar_plan($id)
+    {
+        try {
+            $stmt = $this->db->prepare("UPDATE client_plans SET status = 0 WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }

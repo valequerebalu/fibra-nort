@@ -22,14 +22,18 @@
                                     </button>
                                 </div>
                             </div>
+                            <input type="text" name="order_id" id="order_id" class="form-control"  hidden>
+
                             <label>Nombres del Cliente / RUC </label>
                             <input type="text" name="client_name" id="client_name" class="form-control" required>
+                            <input type="text" name="client_id" id="client_id" class="form-control"  hidden>
 
                             <label>Número de Documento </label>
                             <input type="text" name="document_number" id="document_number" class="form-control" required>
 
                             <label>Plan </label>
-                            <input type="text" name="plan_id" id="plan_id" class="form-control" required>
+                            <input type="text" name="plan" id="plan" class="form-control" required>
+                            <input type="text" name="plan_id" id="plan_id" class="form-control"  hidden>
 
                             <label>Nodo</label>
                             <select class="form-control" name="nodo_id" id="nodo_id" required>
@@ -51,7 +55,7 @@
 
                             <label>Fecha de Inicio</label>
                             <div class="input-group date" id="fecha_inicio_plan" data-target-input="nearest">
-                                <input type="text" name="start_date" class="form-control datetimepicker-input" data-target="#fecha_inicio_plan" required>
+                                <input type="text" id="start_date" name="start_date" class="form-control datetimepicker-input" data-target="#fecha_inicio_plan" required>
                                 <div class="input-group-append" data-target="#fecha_inicio_plan" data-toggle="datetimepicker">
                                     <div class="input-group-text">
                                         <i class="fa fa-calendar"></i>
@@ -61,7 +65,7 @@
 
                             <label>Fecha de instalación</label>
                             <div class="input-group date" id="fecha_instalacion_plan" data-target-input="nearest">
-                                <input type="text" name="installed_at" class="form-control datetimepicker-input" data-target="#fecha_instalacion_plan" required>
+                                <input type="text" id="installed_at" name="installed_at" class="form-control datetimepicker-input" data-target="#fecha_instalacion_plan" required>
                                 <div class="input-group-append" data-target="#fecha_instalacion_plan" data-toggle="datetimepicker">
                                     <div class="input-group-text">
                                         <i class="fa fa-calendar"></i>
