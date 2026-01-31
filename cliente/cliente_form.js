@@ -1,8 +1,6 @@
-$(document).ready(function () {
-  // Los event listeners se manejan con la función cliente_form() desde onclick
-});
-
-$(function () {
+// Función para inicializar componentes del formulario
+// Se debe llamar CADA VEZ que se carga el formulario en el modal
+function inicializarFormularioCliente() {
   // Inicializar calendario para Fecha Nacimiento
   $("#fecha_nacimiento").datetimepicker({
     format: "YYYY-MM-DD",
@@ -18,7 +16,7 @@ $(function () {
       close: "fa fa-times",
     },
   });
-});
+}
 // Event delegation para elementos dinámicos del formulario
 $(document).on("change", "#document_type_id", function () {
   let tipoDoc = $(this).val();

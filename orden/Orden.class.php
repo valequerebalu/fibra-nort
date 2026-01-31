@@ -23,12 +23,14 @@ class Orden
                         o.scheduled_time,
                         p.name AS plan,
                         o.description,
-                        o.state,
+                        o.order_states_id,
+                        os.name AS state,
                         o.status AS status
                     FROM service_orders o
                     JOIN clients c ON o.client_id = c.id
                     LEFT JOIN users u ON o.technician_id = u.id
                     JOIN plans p ON o.plan_id = p.id
+                    JOIN order_states os ON o.order_states_id = os.id
                     WHERE o.status = 1";
 
             $sentencia = $this->db->prepare($sql);
@@ -96,9 +98,9 @@ class Orden
     {
         try {
             $sql = "INSERT INTO service_orders 
-                        (seller_id, technician_id, client_id, scheduled_date, scheduled_time, plan_id, description, created_by, status) 
+                        (seller_id, technician_id, client_id, scheduled_date, scheduled_time, plan_id, description, created_by, status, order_states_id) 
                     VALUES 
-                        (:seller_id, :technician_id, :client_id, :scheduled_date, :scheduled_time, :plan_id, :description, :created_by, 1)";
+                        (:seller_id, :technician_id, :client_id, :scheduled_date, :scheduled_time, :plan_id, :description, :created_by, 1, 1)";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':seller_id', $seller_id);
@@ -144,7 +146,7 @@ class Orden
                         o.plan_id,
                         p.name AS plan_name,
                         o.description,
-                        o.state,
+                        o.order_states_id,
                         o.status AS status
                     FROM service_orders o
                     JOIN clients c ON o.client_id = c.id
@@ -161,31 +163,30 @@ class Orden
         }
     }
 
-    public function editar($id, $seller_id, $technician_id, $client_id, $scheduled_date, $scheduled_time, $plan_id, $description, $state, $updated_by)
+    public function editar($id,  $technician_id, $client_id, $scheduled_date, $scheduled_time, $plan_id, $description, $updated_by)
     {
         try {
             $sql = "UPDATE service_orders 
-                    SET seller_id = :seller_id, 
+                    SET 
                         technician_id = :technician_id, 
                         client_id = :client_id, 
                         scheduled_date = :scheduled_date, 
                         scheduled_time = :scheduled_time, 
                         plan_id = :plan_id, 
                         description = :description, 
-                        state = :state, 
                         updated_by = :updated_by 
                     WHERE id = :id";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':seller_id', $seller_id);
+        
             $stmt->bindParam(':technician_id', $technician_id);
             $stmt->bindParam(':client_id', $client_id);
             $stmt->bindParam(':scheduled_date', $scheduled_date);
             $stmt->bindParam(':scheduled_time', $scheduled_time);
             $stmt->bindParam(':plan_id', $plan_id);
             $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':state', $state);
+       
             $stmt->bindParam(':updated_by', $updated_by);
 
             if ($stmt->execute()) {

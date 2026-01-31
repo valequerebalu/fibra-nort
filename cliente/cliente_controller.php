@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/Cliente.class.php';
 
 // Capturamos la operación (op) que envía el JS
@@ -60,13 +61,14 @@ switch ($operacion) {
         $paternal_surname = $_POST['paternal_surname'];
         $sex              = $_POST['sex'];
         $phone            = $_POST['phone'] ?? null;
+        $date_birth       = $_POST['date_birth'] ?? null;
         $email            = $_POST['email'] ?? null;
         $address          = $_POST['address'];
         $reference        = $_POST['reference'] ?? '';
 
         // Valores por defecto para la lógica de negocio
         $state_id   = 1; // Activo
-        $created_by = 1; // ID del usuario (luego lo sacarás de $_SESSION)
+        $created_by = $_SESSION['user_id'] ; // ID del usuario de la sesión
 
         // Llamamos al método insertar con los datos reales
         $res = $objCliente->insertar(
@@ -77,6 +79,7 @@ switch ($operacion) {
             $paternal_surname,
             $sex,
             $phone,
+            $date_birth,
             $email,
             $address,
             $reference,
@@ -119,21 +122,26 @@ switch ($operacion) {
         $paternal_surname = $_POST['paternal_surname'];
         $sex              = $_POST['sex'];
         $phone            = $_POST['phone'] ?? null;
+        $date_birth       = $_POST['date_birth'] ?? null;
         $email            = $_POST['email'] ?? null;
         $address          = $_POST['address'];
         $reference        = $_POST['reference'] ?? '';
 
         // Valores por defecto para la lógica de negocio
         $state_id = 1; // Activo
-        $updated_by = 1;
+        $updated_by = $_SESSION['user_id'] ; // ID del usuario de la sesión
 
         // Llamamos al método editar con los datos reales
         $res = $objCliente->editar(
             $id,
             $document_type_id,
             $document_number,
-            $full_name,
+            $name_or_company_name,
+            $maternal_surname,
+            $paternal_surname,
+            $sex,
             $phone,
+            $date_birth,
             $email,
             $address,
             $reference,

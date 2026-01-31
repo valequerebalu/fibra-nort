@@ -1,35 +1,40 @@
-$(function () {
-  // Inicializar calendario para Fecha Programada
-  $("#fecha_programada").datetimepicker({
-    format: "YYYY-MM-DD",
-    icons: {
-      time: "fa fa-clock",
-      date: "fa fa-calendar",
-      up: "fa fa-arrow-up",
-      down: "fa fa-arrow-down",
-      previous: "fa fa-chevron-left",
-      next: "fa fa-chevron-right",
-      today: "fa fa-calendar-check",
-      clear: "fa fa-trash",
-      close: "fa fa-times",
-    },
-  });
+// Inicializar cuando el modal se muestra
+$(document).on('shown.bs.modal', '#modal_registro_orden', function () {
+  // Inicializar calendario para Fecha Programada solo si no está inicializado
+  if (!$("#fecha_programada").data("DateTimePicker")) {
+    $("#fecha_programada").datetimepicker({
+      format: "YYYY-MM-DD",
+      icons: {
+        time: "fa fa-clock",
+        date: "fa fa-calendar",
+        up: "fa fa-arrow-up",
+        down: "fa fa-arrow-down",
+        previous: "fa fa-chevron-left",
+        next: "fa fa-chevron-right",
+        today: "fa fa-calendar-check",
+        clear: "fa fa-trash",
+        close: "fa fa-times",
+      },
+    });
+  }
 
-  // Inicializar selector de hora para Hora Programada
-  $("#hora_programada").datetimepicker({
-    format: "HH:mm",
-    icons: {
-      time: "fa fa-clock",
-      date: "fa fa-calendar",
-      up: "fa fa-arrow-up",
-      down: "fa fa-arrow-down",
-      previous: "fa fa-chevron-left",
-      next: "fa fa-chevron-right",
-      today: "fa fa-calendar-check",
-      clear: "fa fa-trash",
-      close: "fa fa-times",
-    },
-  });
+  // Inicializar selector de hora para Hora Programada solo si no está inicializado
+  if (!$("#hora_programada").data("DateTimePicker")) {
+    $("#hora_programada").datetimepicker({
+      format: "HH:mm",
+      icons: {
+        time: "fa fa-clock",
+        date: "fa fa-calendar",
+        up: "fa fa-arrow-up",
+        down: "fa fa-arrow-down",
+        previous: "fa fa-chevron-left",
+        next: "fa fa-chevron-right",
+        today: "fa fa-calendar-check",
+        clear: "fa fa-trash",
+        close: "fa fa-times",
+      },
+    });
+  }       
 });
 // Submit del formulario
 $(document).on("submit", "#form_registro_orden", function (e) {

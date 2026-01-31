@@ -1,15 +1,11 @@
-<style>
-    .bootstrap-datetimepicker-widget.dropdown-menu {
-        z-index: 99999 !important;
-    }
-</style>
+
 <div class="modal fade" id="modal_registro_cliente" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form id="form_registro_cliente" method="POST">
 
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title"><i class="fa fa-user-plus"></i> Nuevo Cliente</h4>
+                    <h4 class="modal-titulo" id="modal_titulo_cliente"><i class="fa fa-user-plus"></i> Nuevo Cliente</h4>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

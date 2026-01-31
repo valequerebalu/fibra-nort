@@ -50,10 +50,15 @@ class Cliente
         try {
             $sql = "SELECT 
                         id,
+                        code_clients,
                         document_type_id,
                         document_number,
                         name_or_company_name,
+                        paternal_surname,
+                        maternal_surname,
+                        sexo,
                         phone,
+                        date_birth,
                         email,
                         address,
                         reference,
@@ -65,8 +70,11 @@ class Cliente
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            error_log('Cliente obtenido: ' . json_encode($cliente));
+            return $cliente;
         } catch (Exception $e) {
+            error_log('Error en obtener_por_id: ' . $e->getMessage());
             return null;
         }
     }
@@ -94,26 +102,30 @@ class Cliente
             return [];
         }
     }
-    public function insertar($doc_type_id, $doc_num, $full_name, $phone, $email, $address, $reference, $state_id, $created_by)
+    public function insertar($doc_type_id, $doc_num, $name_or_company_name, $maternal_surname,$paternal_surname, $sex, $phone, $date_birth, $email, $address, $reference, $state_id, $created_by)
     {
         $this->db->beginTransaction();
         try {
             // El code_clients NO se incluye porque el TRIGGER lo genera solo
             $sql = "INSERT INTO clients (
-                        document_type_id, document_number, full_name, 
-                        phone, email, address, reference, 
+                        document_type_id, document_number, name_or_company_name, maternal_surname, paternal_surname, sexo,
+                        phone, date_birth, email, address, reference, 
                         client_state_id, created_by
                     ) VALUES (
-                        :doc_type, :doc_num, :name, 
-                        :phone, :email, :address, :ref, 
+                        :doc_type, :doc_num, :name, :maternal_surname, :paternal_surname, :sex,
+                        :phone, :date_birth, :email, :address, :ref, 
                         :state, :user_id
                     )";
 
             $sentencia = $this->db->prepare($sql);
             $sentencia->bindParam(":doc_type", $doc_type_id, PDO::PARAM_INT);
             $sentencia->bindParam(":doc_num", $doc_num, PDO::PARAM_STR);
-            $sentencia->bindParam(":name", $full_name, PDO::PARAM_STR);
+            $sentencia->bindParam(":name", $name_or_company_name, PDO::PARAM_STR);
+            $sentencia->bindParam(":maternal_surname", $maternal_surname, PDO::PARAM_STR);
+            $sentencia->bindParam(":paternal_surname", $paternal_surname, PDO::PARAM_STR);
+            $sentencia->bindParam(":sex", $sex, PDO::PARAM_STR);
             $sentencia->bindParam(":phone", $phone, PDO::PARAM_STR);
+            $sentencia->bindParam(":date_birth", $date_birth, PDO::PARAM_STR);
             $sentencia->bindParam(":email", $email, PDO::PARAM_STR);
             $sentencia->bindParam(":address", $address, PDO::PARAM_STR);
             $sentencia->bindParam(":ref", $reference, PDO::PARAM_STR);
@@ -130,15 +142,19 @@ class Cliente
         }
     }
 
-    public function editar($id, $doc_type_id, $doc_num, $full_name, $phone, $email, $address, $reference, $state_id, $updated_by)
+    public function editar($id, $doc_type_id, $doc_num, $name_or_company_name, $maternal_surname, $paternal_surname, $sex, $phone, $date_birth, $email, $address, $reference, $state_id, $updated_by)
     {
         $this->db->beginTransaction();
         try {
             $sql = "UPDATE clients SET 
                         document_type_id = :doc_type, 
                         document_number = :doc_num, 
-                        full_name = :name, 
+                        name_or_company_name = :name, 
+                        maternal_surname = :maternal_surname,
+                        paternal_surname = :paternal_surname,
+                        sexo = :sex,
                         phone = :phone, 
+                        date_birth = :date_birth,
                         email = :email, 
                         address = :address, 
                         reference = :ref, 
@@ -151,8 +167,12 @@ class Cliente
             $sentencia->bindParam(":id", $id, PDO::PARAM_INT);
             $sentencia->bindParam(":doc_type", $doc_type_id, PDO::PARAM_INT);
             $sentencia->bindParam(":doc_num", $doc_num, PDO::PARAM_STR);
-            $sentencia->bindParam(":name", $full_name, PDO::PARAM_STR);
+            $sentencia->bindParam(":name", $name_or_company_name, PDO::PARAM_STR);
+            $sentencia->bindParam(":maternal_surname", $maternal_surname, PDO::PARAM_STR);
+            $sentencia->bindParam(":paternal_surname", $paternal_surname, PDO::PARAM_STR);
+            $sentencia->bindParam(":sex", $sex, PDO::PARAM_STR);
             $sentencia->bindParam(":phone", $phone, PDO::PARAM_STR);
+            $sentencia->bindParam(":date_birth", $date_birth, PDO::PARAM_STR);
             $sentencia->bindParam(":email", $email, PDO::PARAM_STR);
             $sentencia->bindParam(":address", $address, PDO::PARAM_STR);
             $sentencia->bindParam(":ref", $reference, PDO::PARAM_STR);

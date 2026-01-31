@@ -40,6 +40,11 @@ function cargarFormularioCliente(action, id) {
       // Inyectamos el HTML del formulario dentro del contenedor
       $("#modal_cliente_container").html(response);
       
+      // Inicializar componentes del formulario (Datepicker)
+      if (typeof inicializarFormularioCliente === 'function') {
+        inicializarFormularioCliente();
+      }
+
       // Guardar operación e id directamente
       $("#modal_registro_cliente")
         .data("operacion", operacion)
@@ -47,17 +52,16 @@ function cargarFormularioCliente(action, id) {
       
       // Resetear o actualizar el título
       if (action === 'I') {
-        $("#titulo_cliente").text("Nuevo Cliente");
+        $("#modal_titulo_cliente").text("Nuevo Cliente");
       }
- 
+      
       $("#modal_registro_cliente").modal("show");
       
-      // Si es edición, cargar los datos del cliente DESPUÉS de que el modal esté visible
+      // Si es edición, cargar los datos del cliente
       if (action === 'U' && id) {
-        // Usar setTimeout para asegurar que el DOM esté completamente renderizado
         setTimeout(function() {
           cargarDatosCliente(id);
-        }, 500);
+        }, 300);
       }
     },
     error: function () {
@@ -77,15 +81,19 @@ function cargarDatosCliente(id) {
         let cliente = response.data;
         
         // Actualizar el título con el nombre del cliente
-        $("#titulo_cliente").text("Editando: " + cliente.full_name);
+        $("#modal_titulo_cliente").text("Editando Cliente: " + cliente.code_clients + " / " + cliente.name_or_company_name);
         
         // Poblar los inputs del formulario con los datos del cliente
         $("#document_type_id").val(cliente.document_type_id);
         $("#document_number").val(cliente.document_number);
-        $("#full_name").val(cliente.full_name);        
-        $("#phone").val(cliente.phone);        
-        $("#email").val(cliente.email);        
-        $("#address").val(cliente.address);        
+        $("#name_or_company_name").val(cliente.name_or_company_name);
+        $("#maternal_surname").val(cliente.maternal_surname);
+        $("#paternal_surname").val(cliente.paternal_surname);
+        $("#sex").val(cliente.sexo);
+        $("#date_birth").val(cliente.date_birth);
+        $("#phone").val(cliente.phone);
+        $("#email").val(cliente.email);
+        $("#address").val(cliente.address);
         $("#reference").val(cliente.reference);
       } else {
         console.error("Error al obtener datos del cliente: " + response.mensaje);

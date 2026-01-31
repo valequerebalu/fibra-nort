@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/Orden.class.php';
 
 $operacion = $_POST['op'] ?? '';
@@ -56,10 +57,10 @@ switch ($operacion) {
         $description            = $_POST['description'] ?? null;
 
         // Valores por defecto para la lógica de negocio
-        $created_by = 1;
-        $seller_id = 1; // ID del usuario (luego lo sacarás de $_SESSION)
+        $created_by = $_SESSION['user_id'] ; // ID del usuario de la sesión;
+        $seller_id = $_SESSION['user_id'] ; 
         $technician_id = null;
-        $state = 'CREADO';
+     
 
         // Llamamos al método insertar con los datos reales
         $res = $objOrden->insertar(
@@ -77,7 +78,7 @@ switch ($operacion) {
         if ($res) {
             echo json_encode([
                 'estado' => 1,
-                'mensaje' => 'Orden insertado correctamente'
+                'mensaje' => 'Orden insertada correctamente'
             ]);
         } else {
             echo json_encode([
@@ -130,27 +131,25 @@ switch ($operacion) {
         }
 
         // Capturamos los datos del POST
-        $seller_id = 1; // ID del usuario (luego lo sacarás de $_SESSION)
+       
         $technician_id = $_POST['technician_id'] ?? null;
         $client_id = $_POST['id_cliente'] ;
         $scheduled_date = $_POST['scheduled_date'];
         $scheduled_time = $_POST['scheduled_time'];
         $plan_id = $_POST['plan_id'] ?? null;
         $description = $_POST['description'] ?? null;
-        $state = 'CREADO';
-        $updated_by = 1;
+      
+        $updated_by = $_SESSION['user_id'] ;
 
         // Llamamos al método editar con los datos reales
         $res = $objOrden->editar(
             $id,
-            $seller_id,
             $technician_id,
             $client_id,
             $scheduled_date,
             $scheduled_time,
             $plan_id,
             $description,
-            $state,
             $updated_by
         );
 

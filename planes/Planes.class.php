@@ -29,7 +29,7 @@ class Planes
                                             inner join plans p on cp.plan_id = p.id
                                             where cp.status = 1");
             $stmt->execute();
-            
+
             if ($stmt->rowCount() > 0) {
                 return [
                     "estado" => 1,
@@ -44,10 +44,35 @@ class Planes
         }
     }
 
-    public function obtener_plan($id)
+    public function obtener_nodo()
     {
-        $stmt = $this->db->prepare("SELECT * FROM planes WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+         try {
+            $sql = "SELECT id, name FROM nodes WHERE status = 1";
+            $sentencia = $this->db->prepare($sql);
+            $sentencia->execute();
+
+            if ($sentencia->rowCount() > 0) {
+                return $sentencia->fetchAll(PDO::FETCH_ASSOC);
+            }
+
+            return [];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    public function obtener_orden_code($code_order)
+    {
+        $stmt = $this->db->prepare("SELECT
+                                so.client_id,
+                                concat(c.name_or_company_name, ' ', c.paternal_surname, ' ', c.maternal_surname) as client_name,
+                                c.document_number,
+                                so.plan_id,
+                                    p.name
+                                FROM service_orders so
+                                inner join clients c on so.client_id = c.id
+                                inner join plans p on so.plan_id = p.id
+                                WHERE code_service_orders = :code_order");
+        $stmt->bindParam(':code_order', $code_order, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

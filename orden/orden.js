@@ -40,7 +40,7 @@ function cargarFormularioOrden(action, id) {
 
       // Resetear o actualizar el título
       if (action === "I") {
-        $("#titulo_orden").text("Nueva Orden");
+        $("#modal-titulo-orden").text("Nueva Orden");
       }
 
       $("#modal_registro_orden").modal("show");
@@ -50,7 +50,7 @@ function cargarFormularioOrden(action, id) {
         // Usar setTimeout para asegurar que el DOM esté completamente renderizado
         setTimeout(function () {
           cargarDatosOrden(id);
-        }, 500);
+        }, 300);
       }
     },
     error: function () {
@@ -70,7 +70,7 @@ function cargarDatosOrden(id) {
         let orden = response.data;
 
         // Actualizar el título con el nombre del cliente
-        $("#titulo_orden").text("Editando: " + orden.name_or_company_name);
+        $("#modal-titulo-orden").text("Editando Orden: " + orden.code_orders);
 
         // Poblar los inputs del formulario con los datos del cliente
         $("#name_or_company_name").val(orden.name_or_company_name);
