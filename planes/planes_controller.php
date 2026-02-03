@@ -214,4 +214,32 @@ switch ($operacion) {
             ]);
         }
         break;
+    
+    case 'aprobar':
+        $id = $_POST['id'] ?? null;
+
+        if (!$id) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'ID de plan no especificado'
+            ]);
+            break;
+        }
+
+        $res = $objPlanes->aprobar_plan($id);
+
+        header('Content-Type: application/json');
+        if ($res) {
+            echo json_encode([
+                'estado' => 1,
+                'mensaje' => 'Plan aprobado correctamente'
+            ]);
+        } else {
+            echo json_encode([
+                'estado' => 0,
+                'mensaje' => 'Error al aprobar el plan'
+            ]);
+        }
+        break;
 }       

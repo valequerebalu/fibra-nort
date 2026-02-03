@@ -1,3 +1,7 @@
+<?php 
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/fibra-nort/core/AccessControl.php';
+?>
+
 <table id ="tabla_asignacion" class="table table-bordered table-hover table-striped">
     <thead class="bg-primary">
         <tr>
@@ -61,7 +65,7 @@
                                 break;
                         }
                         ?>
-                        <span class="badge badge-pill <?php echo $badgeClass; ?>" style="font-size: 0.9rem; padding: 8px 12px;">
+                        <span class="badge badge-pill <?php echo $badgeClass; ?>" style="font-size: 0.75rem; padding: 4px 8px;">
                             <i class="fa <?php echo $iconClass; ?> mr-1"></i> <?php echo $asignacion['status']; ?>
                         </span>
                     </td>
@@ -69,33 +73,39 @@
                     </td>
                    
                     <td style="text-align: center;">
-                        <?php 
-                        // Verificar el rol desde la sesión (iniciada en el controlador)
-                        $role_id = $_SESSION['role_id'] ?? 0;
-                        ?>
+                       
 
-                        <?php if ($role_id == 3): ?>
-                            <!-- Botón para el Técnico -->
-                            <?php if ($asignacion['status'] == 'ASIGNADO'): // Solo si está asignada ?>
-                                <button class="btn btn-xs btn-success" onclick="aceptarOrden(<?php echo $asignacion['id']; ?>)">
+                        <!-- Botones de Tecnico -->
+                        <?php if ($asignacion['status'] == 'ASIGNADO'): ?>
+                            <?php if (AccessControl::hasPermission('asignacion.aceptar')): ?>
+                                <button class="btn btn-sm btn-success" onclick="aceptarOrden(<?php echo $asignacion['id']; ?>)">
                                     <i class="fa fa-check"></i> Aceptar
                                 </button>
-                                 <button class="btn btn-xs btn-danger" onclick="rechazarOrden(<?php echo $asignacion['id']; ?>)">
+                            <?php endif; ?>
+                            
+                            <?php if (AccessControl::hasPermission('asignacion.rechazar')): ?>
+                                <button class="btn btn-sm btn-danger" onclick="rechazarOrden(<?php echo $asignacion['id']; ?>)">
                                     <i class="fa fa-times"></i> Rechazar
                                 </button>
                             <?php endif; ?>
-                        <?php else: ?>
-                            <!-- Botones para Admin/Supervisor -->
-                            <?php if (!empty($asignacion['technician']) && $asignacion['technician'] != '---'): ?>
-                                <button class="btn btn-xs btn-info" onclick="asignacionForm('R', <?php echo $asignacion['id']; ?>)">
+                        <?php endif; ?>
+
+                        <!-- Botones de Gestión (Admin/Supervisor) -->
+                        <?php if (!empty($asignacion['technician']) && $asignacion['technician'] != '---'): ?>
+                            <?php if (AccessControl::hasPermission('asignacion.reasignar') && 
+                                  ($asignacion['status'] ?? '') != 'APROBADO'): ?>
+                                <button class="btn btn-sm btn-info" onclick="asignacionForm('R', <?php echo $asignacion['id']; ?>)">
                                     <i class="fa fa-sync-alt"></i> Reasignar
                                 </button>
-                            <?php else: ?>
-                                <button class="btn btn-xs btn-success" onclick="asignacionForm('A', <?php echo $asignacion['id']; ?>)">
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <?php if (AccessControl::hasPermission('asignacion.asignar') && 
+                                  ($asignacion['status'] ?? '') != 'APROBADO'): ?>
+                                <button class="btn btn-sm btn-success" onclick="asignacionForm('A', <?php echo $asignacion['id']; ?>)">
                                     <i class="fa fa-user-plus"></i> Asignar
                                 </button>
-                            <?php endif; ?>      
-                        <?php endif; ?>                        
+                            <?php endif; ?>
+                        <?php endif; ?>      
                     </td>
                 </tr>
             <?php }

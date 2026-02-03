@@ -54,7 +54,7 @@
             <form id="form_rechazar_orden" method="POST">
 
                 <div class="modal-header bg-danger">
-                    <h4 class="modal-title"><i class="fa fa-times-circle"></i> Rechazar Orden</h4>
+                    <h4 class="modal-title" id="titulo_rechazo"><i class="fa fa-times-circle"> Rechazar Orden / <?php echo $orden_data['code_orders'] ?? '---'; ?></i> </h4>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -79,7 +79,7 @@
                         <small class="form-text text-muted">Máximo 500 caracteres</small>
                     </div>
 
-                    <input type="hidden" id="rechazo_orden_id" name="orden_id" value="">
+                    <input type="hidden" id="orden_id" name="orden_id" value="<?php echo $orden_data['id'] ?? ''; ?>">
                 </div>
 
                 <div class="modal-footer">

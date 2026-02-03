@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/Asignacion.class.php';
 session_start();
+require_once __DIR__ . '/../core/AccessControl.php'; // Cargar AccessControl
 
 $operacion = $_POST['op'] ?? '';
 $objAsignacion = new Asignacion();
@@ -8,7 +9,7 @@ switch ($operacion) {
     case 'listar':
         
         $technician_id = null;
-        if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 3) {
+        if (AccessControl::hasPermission('asignacion.ver_mis_ordenes')) {
             $technician_id = $_SESSION['user_id'];
         }
         $lista_asignaciones = $objAsignacion->listar_asignaciones($technician_id);
@@ -23,6 +24,16 @@ switch ($operacion) {
             $orden_data = $objAsignacion->obtener_orden($id);
             // Obtener lista de técnicos disponibles
             $tecnicos = $objAsignacion->listar_tecnicos();
+            require_once __DIR__ . '/asignacion_form.php';
+        
+        break;
+    
+        case 'form_rechazo':
+     
+        $id = $_POST['id'] ;
+   
+            // Obtener los datos de la orden para mostrar en el modal
+            $orden_data = $objAsignacion->obtener_orden($id);
             require_once __DIR__ . '/asignacion_form.php';
         
         break;
@@ -44,7 +55,7 @@ switch ($operacion) {
         break;
 
     case 'rechazar_orden':
-        $orden_id = $_POST['orden_id'] ?? 0;
+        $orden_id = $_POST['orden_id'];
         $motivo_rechazo = $_POST['motivo_rechazo'] ?? '';
         $resultado = $objAsignacion->rechazar_orden($orden_id, $motivo_rechazo);
         header('Content-Type: application/json');

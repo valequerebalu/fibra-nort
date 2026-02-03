@@ -37,8 +37,40 @@
                     <td><?php echo $orden['scheduled_time'] ?? '---'; ?></td>
                     <td><?php echo $orden['plan']; ?></td>
                     <td><?php echo $orden['description']; ?></td>
-                    <td><?php echo $orden['state']; ?></td>
-                       
+                    <td class="text-center">
+                        <?php 
+                        $estado = strtoupper($orden['state']);
+                        $badgeClass = 'badge-secondary';
+                        $iconClass = 'fa-circle';
+                        
+                        switch ($estado) {
+                            case 'CREADO':
+                                $badgeClass = 'badge-secondary';
+                                $iconClass = 'fa-plus-circle';
+                                break;
+                            case 'ASIGNADO':
+                                $badgeClass = 'badge-warning'; 
+                                $iconClass = 'fa-user-clock';
+                                break;
+                            case 'ACEPTADA':
+                            case 'EN PROCESO':
+                                $badgeClass = 'badge-primary';
+                                $iconClass = 'fa-tools';
+                                break;
+                            case 'RECHAZADA':
+                                $badgeClass = 'badge-danger';
+                                $iconClass = 'fa-times-circle';
+                                break;
+                            case 'ATENDIDO':
+                            case 'APROBADO':
+                                $badgeClass = 'badge-success';
+                                $iconClass = 'fa-check-circle';
+                                break;
+                        }
+                        ?>
+                        <span class="badge badge-pill <?php echo $badgeClass; ?>" style="font-size: 0.75rem; padding: 4px 8px;">
+                            <i class="fa <?php echo $iconClass; ?> mr-1"></i> <?php echo $orden['state']; ?>
+                        </span>
                     </td>
                     <td style="text-align: center;">
                         <?php if ($orden['status'] == 1): ?>

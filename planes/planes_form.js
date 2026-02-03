@@ -56,13 +56,25 @@ $(document).on("submit", "#form_registro_plan", function (e) {
       if (response.estado == 1) {
         $("#modal_registro_plan").modal("hide");
         listarPlanes();
-        alert(response.mensaje);
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: response.mensaje
+        });
       } else {
-        alert("Error: " + response.mensaje);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.mensaje
+        });
       }
     },
     error: function (xhr, status, error) {
-      alert("Error en la solicitud: " + error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "Error en la solicitud: " + error
+      });
     },
   });
 });

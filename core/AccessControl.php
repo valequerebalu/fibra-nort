@@ -23,21 +23,44 @@ class AccessControl {
             return false;
         }
 
-        $userRole = $_SESSION['role']; // Ej: 'Administrador'
+        $userRole = $_SESSION['role']; 
         
-        // Normalizar vista (por si viene con query params o algo)
+        // Normalizar vista 
         $module = strtolower($view);
-
-        // Si el rol es Super Admin (ej: acceso total hardcodeado opcional)
-        // if ($userRole === 'SuperAdmin') return true;
 
         // Verificar si el rol existe en la configuración
         if (!isset(self::$permissions[$userRole])) {
-            // Si el rol no está definido, denegar por seguridad (o dar acceso básico)
             return false;
         }
 
-        // Verificar si el módulo está en la lista permitida para ese rol
-        return in_array($module, self::$permissions[$userRole]);
+        // Verificar si el módulo está en la lista permitida para ese rol (ahora dentro de 'modules')
+        $allowedModules = self::$permissions[$userRole]['modules'] ?? [];
+        return in_array($module, $allowedModules);
+    }
+    
+    /**
+     * Verifica si el usuario actual tiene permiso para una acción específica
+     * @param string $permission Nombre del permiso (ej: 'planes.crear')
+     * @return boolean
+     */
+    public static function hasPermission($permission) {
+        // Cargar permisos si no están en memoria
+        if (empty(self::$permissions)) {
+            self::load();
+        }
+
+        if (!isset($_SESSION['role'])) {
+            return false;
+        }
+
+        $userRole = $_SESSION['role'];
+        
+        if (!isset(self::$permissions[$userRole])) {
+            return false;
+        }
+        
+        // Verificar si la acción está en la lista permitida
+        $allowedActions = self::$permissions[$userRole]['actions'] ?? [];
+        return in_array($permission, $allowedActions);
     }
 }

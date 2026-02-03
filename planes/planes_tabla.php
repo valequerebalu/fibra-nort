@@ -1,3 +1,6 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/fibra-nort/core/AccessControl.php';
+?>
 <table id="tabla_planes" class="table table-bordered table-hover table-striped">
     <thead class="bg-primary">
         <tr>
@@ -56,12 +59,24 @@
                         <?php endif; ?>
                     </td>
                     <td style="text-align: center;">
-                        <button class="btn btn-xs btn-warning" onclick="cargarFormularioPlan('U', <?php echo $plan['id']; ?>)">
-                            <i class="fa fa-edit "></i>
-                        </button>
-                        <button class="btn btn-xs btn-danger" onclick="eliminarPlan(<?php echo $plan['id']; ?>)">
-                            <i class="fa fa-trash"></i>
-                        </button>
+                        <?php if (AccessControl::hasPermission('planes.editar')): ?>
+                            <button class="btn btn-xs btn-warning" onclick="planForm('U', <?php echo $plan['id']; ?>)">
+                                <i class="fa fa-edit "></i>
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if (AccessControl::hasPermission('planes.eliminar')): ?>
+                            <button class="btn btn-xs btn-danger" onclick="planForm(<?php echo $plan['id']; ?>)">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        <?php endif; ?>
+
+                        <?php if (AccessControl::hasPermission('planes.aprobar') && 
+                                  ($plan['state'] ?? '') != 'APROBADO'): ?>
+                            <button class="btn btn-xs btn-success" onclick="aprobarPlan(<?php echo $plan['id']; ?>)">
+                                <i class="fa fa-check"></i> Aprobar
+                            </button>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php }

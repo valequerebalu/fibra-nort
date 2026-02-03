@@ -48,15 +48,12 @@ function cargarModalAsignacion(action, id) {
                 .data("operacion", operacion)
                 .data("id", id);
 
-            if (action === 'A') {
+            if (action === 'A') { //asignar y rechazar
                 $("#titulo_asignacion").text("Asignar Técnico");
             }
             else {
                 $("#titulo_asignacion").text("Reasignar Técnico");
-                setTimeout(function () {
-                $("#modal_rechazar_orden").modal("show");
 
-            }, 100);
             }
             setTimeout(function () {
                 $("#modal_asignacion_tecnico").modal("show");
@@ -119,8 +116,26 @@ function aceptarOrden(id) {
 }
 
 function rechazarOrden(id) {
-    // Abrir el modal de rechazo
-    $('#rechazo_orden_id').val(id);
-    $('#motivo_rechazo').val('');
-    $('#modal_rechazar_orden').modal('show');
+    $.ajax({
+        url: "/fibra-nort/asignacion/asignacion_controller.php",
+        type: "POST",
+        data: { op: "form_rechazo", id: id },
+        success: function (response) {
+            console.log("Respuesta recibida del servidor");
+
+            $("#modal_rechazo_orden").html(response);
+            $("#modal_rechazar_orden")
+                .data("id", id);
+            setTimeout(function () {
+                $("#modal_rechazar_orden").modal("show");
+
+            }, 100);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error al cargar el formulario de asignación:", error);
+            console.error("Status:", status);
+            console.error("Response:", xhr.responseText);
+        },
+    });
 }
+

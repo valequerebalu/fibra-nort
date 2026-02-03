@@ -28,5 +28,6 @@ $objAsignacion = new Asignacion();
 </section>
 
 <div id="modal_asignacion_container"></div>
+<div id="modal_rechazo_orden"></div>
 
 <script src="/fibra-nort/asignacion/asignacion.js"></script>

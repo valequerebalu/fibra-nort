@@ -50,10 +50,11 @@ $(document).on("submit", "#form_rechazar_orden", function (e) {
 
   const formData = {
     op: "rechazar_orden",
-    orden_id: $("#rechazo_orden_id").val(),
+    orden_id: $(this).find("#orden_id").val(),
     motivo_rechazo: $("#motivo_rechazo").val().trim(),
   };
-
+  console.log("id de la orden:" + formData.orden_id);
+  console.log("motivo de rechazo:" + formData.motivo_rechazo);
   // Validar que el motivo no esté vacío
   if (!formData.motivo_rechazo) {
     Swal.fire({

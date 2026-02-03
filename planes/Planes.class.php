@@ -31,7 +31,8 @@ class Planes
                                                 cp.installed_at,
                                                 cp.start_date,
                                                 cp.end_date,
-                                                cp.status
+                                                cp.status,
+                                                cp.state
                                             from client_plans cp
                                             inner join clients c on cp.client_id = c.id
                                             inner join plans p on cp.plan_id = p.id
@@ -104,6 +105,8 @@ class Planes
         $installed_at
     ) {
         try {
+            $this->db->beginTransaction();
+
             $stmt = $this->db->prepare("INSERT INTO client_plans 
                 (client_id, plan_id, node_id, billing_day, start_date, created_by, service_order_id, invoice_type, router_serial, router_model, ip_address, mac_address, wifi_ssid, wifi_password, installed_at, status) 
                 VALUES 
@@ -126,17 +129,26 @@ class Planes
             $stmt->bindParam(':installed_at', $installed_at);
 
             if ($stmt->execute()) {
+
+                $stmtUpdate = $this->db->prepare("UPDATE service_orders SET order_states_id = 2 WHERE id = :order_id");
+                $stmtUpdate->bindParam(':order_id', $order_id);
+                $stmtUpdate->execute();
+
+                $this->db->commit();
+
                 return [
                     'estado' => 1,
-                    'mensaje' => 'Plan insertado correctamente'
+                    'mensaje' => 'Plan insertado correctamente y orden actualizada.'
                 ];
             } else {
+                $this->db->rollBack();
                 return [
                     'estado' => 0,
                     'mensaje' => 'Error al insertar el plan'
                 ];
             }
         } catch (Exception $e) {
+            $this->db->rollBack();
             throw $e;
         }
     }
@@ -246,6 +258,36 @@ class Planes
             $stmt = $this->db->prepare("UPDATE client_plans SET status = 0 WHERE id = :id");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function aprobar_plan($id)
+    {
+        try {
+            // Obtener el ID de la orden asociada al plan
+            $stmtGet = $this->db->prepare("SELECT service_order_id FROM client_plans WHERE id = :id");
+            $stmtGet->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmtGet->execute();
+            $plan = $stmtGet->fetch(PDO::FETCH_ASSOC);
+
+            if (!$plan || !$plan['service_order_id']) {
+                return false; // Plan no encontrado o sin orden asociada
+            }
+
+            // Actualizar estado del plan
+            $stmt = $this->db->prepare("UPDATE client_plans SET state = 'APROBADO' WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            
+            if ($stmt->execute()) {
+                // Actualizar estado de la orden con el ID correcto
+                $stmtUpdate = $this->db->prepare("UPDATE service_orders SET order_states_id = 3 WHERE id = :order_id");
+                $stmtUpdate->bindParam(':order_id', $plan['service_order_id'], PDO::PARAM_INT);
+                $stmtUpdate->execute();
+                return true;
+            }
+            return false;
         } catch (Exception $e) {
             throw $e;
         }

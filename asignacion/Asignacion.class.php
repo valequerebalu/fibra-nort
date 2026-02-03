@@ -106,12 +106,14 @@ class Asignacion
         try {
             $sql = "UPDATE service_orders 
                     SET technician_id = :technician_id,
-                        order_states_id = 4
+                        order_states_id = 4,
+                        supervisor_id = :supervisor_id
                     WHERE id = :orden_id AND status = 1";
 
             $sentencia = $this->db->prepare($sql);
             $sentencia->bindParam(':technician_id', $technician_id, PDO::PARAM_INT);
             $sentencia->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+            $sentencia->bindParam(':supervisor_id', $_SESSION['user_id'], PDO::PARAM_INT);
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
@@ -136,7 +138,7 @@ class Asignacion
     {
         try {
             // Obtener datos de la orden
-            $sqlOrden = "SELECT technician_id FROM service_orders WHERE id = :orden_id AND status = 1";
+            $sqlOrden = "SELECT technician_id, supervisor_id FROM service_orders WHERE id = :orden_id AND status = 1";
             $stmtOrden = $this->db->prepare($sqlOrden);
             $stmtOrden->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
             $stmtOrden->execute();
@@ -161,15 +163,17 @@ class Asignacion
             if ($sentencia->rowCount() > 0) {
                 // Insertar en service_order_detail
                 $sqlDetail = "INSERT INTO service_order_detail 
-                             (service_order_id, technician_id, order_state_id, assigned_at, responded_at, response_note)
+                             (service_order_id, technician_id, order_state_id, assigned_at, responded_at, assigned_by, response_note)
                              VALUES 
-                             (:service_order_id, :technician_id, 5, NOW(), NOW(), :response_note)";
+                             (:service_order_id, :technician_id, :order_state_id, NOW(), NOW(), :assigned_by, :response_note)";
 
                 $stmtDetail = $this->db->prepare($sqlDetail);
                 $stmtDetail->bindParam(':service_order_id', $orden_id, PDO::PARAM_INT);
                 $stmtDetail->bindParam(':technician_id', $orden['technician_id'], PDO::PARAM_INT);
                 $order_state_id = 5; // Estado: Aceptada
                 $stmtDetail->bindParam(':order_state_id', $order_state_id, PDO::PARAM_INT);
+                $assigned_by = $orden['supervisor_id'];
+                $stmtDetail->bindParam(':assigned_by', $assigned_by, PDO::PARAM_INT);
                 $response_note = 'Orden aceptada por el técnico';
                 $stmtDetail->bindParam(':response_note', $response_note, PDO::PARAM_STR);
                 $stmtDetail->execute();
@@ -196,7 +200,7 @@ class Asignacion
     {
         try {
             // Obtener datos de la orden
-            $sqlOrden = "SELECT technician_id, order_states_id FROM service_orders WHERE id = :orden_id AND status = 1";
+            $sqlOrden = "SELECT technician_id, order_states_id, supervisor_id FROM service_orders WHERE id = :orden_id AND status = 1";
             $stmtOrden = $this->db->prepare($sqlOrden);
             $stmtOrden->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
             $stmtOrden->execute();
@@ -223,14 +227,14 @@ class Asignacion
                 $sqlDetail = "INSERT INTO service_order_detail 
                              (service_order_id, technician_id, order_state_id, assigned_at, responded_at, assigned_by, response_note)
                              VALUES 
-                             (:service_order_id, :technician_id, :order_state_id, NOW(), NOW(), :assigned_by, :response_note)";
+                             (:service_order_id, :technician_id, :order_state_id, '', NOW(), :assigned_by, :response_note)";
                 
                 $stmtDetail = $this->db->prepare($sqlDetail);
                 $stmtDetail->bindParam(':service_order_id', $orden_id, PDO::PARAM_INT);
                 $stmtDetail->bindParam(':technician_id', $orden['technician_id'], PDO::PARAM_INT);
                 $order_state_id = 6; // Estado: Rechazada
                 $stmtDetail->bindParam(':order_state_id', $order_state_id, PDO::PARAM_INT);
-                $assigned_by = $_SESSION['user_id'] ?? null;
+                $assigned_by = $orden['supervisor_id'];
                 $stmtDetail->bindParam(':assigned_by', $assigned_by, PDO::PARAM_INT);
                 $stmtDetail->bindParam(':response_note', $motivo_rechazo, PDO::PARAM_STR);
                 $stmtDetail->execute();

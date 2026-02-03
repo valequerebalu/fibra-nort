@@ -65,7 +65,7 @@ function cargarDatosPlan(id) {
     success: function (response) {
       if (response.estado == 1) {
         let plan = response.data;
-        
+
         $("#code_service_orders").val(plan.code_orders);
         $("#order_id").val(plan.order_id);
         $("#client_name").val(plan.client_name);
@@ -99,7 +99,7 @@ function cargarDatosPlan(id) {
 function guardarPlan() {
   let operacion = $("#modal_registro_plan").data("operacion");
   let id = $("#modal_registro_plan").data("id");
-  
+
   let datos = {
     op: operacion,
     id: id,
@@ -124,42 +124,62 @@ function guardarPlan() {
     data: datos,
     success: function (response) {
       if (response.estado == 1) {
-        alert(response.mensaje);
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: response.mensaje
+        });
         $("#modal_registro_plan").modal("hide");
         listarPlanes();
       } else {
-        alert("Error: " + response.mensaje);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.mensaje
+        });
       }
     },
     error: function () {
       console.error("Error al guardar el plan");
-      alert("Error al guardar el plan");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "Error al guardar el plan"
+      });
     },
   });
 }
 
 function eliminarPlan(id) {
-  if (confirm("¿Está seguro de que desea eliminar este plan?")) {
-    $.ajax({
-      url: "/fibra-nort/planes/planes_controller.php",
-      type: "POST",
-      data: { op: "eliminar", id: id },
-      success: function (response) {
-        if (response.estado == 1) {
-          alert(response.mensaje);
-          listarPlanes();
-        } else {
-          alert("Error: " + response.mensaje);
-        }
-      },
-      error: function () {
-        console.error("Error al eliminar el plan");
-        alert("Error al eliminar el plan");
-      },
-    });
-  }
+  $.ajax({
+    url: "/fibra-nort/planes/planes_controller.php",
+    type: "POST",
+    data: { op: "eliminar", id: id },
+    success: function (response) {
+      if (response.estado == 1) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: response.mensaje
+        });
+        listarPlanes();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: "Error: " + response.mensaje
+        });
+      }
+    },
+    error: function () {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "Error al eliminar el plan"
+      });
+    },
+  });
 }
-
 
 function planForm(action, id) {
   console.log("Acción:", action, "ID:", id);
@@ -169,9 +189,20 @@ function planForm(action, id) {
   }
   // Si es eliminar (cuando se pasa solo el ID como número)
   else if (typeof action === "number") {
-    if (confirm("¿Está seguro de eliminar este plan?")) {
-      eliminarPlan(action);
-    }
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: "¡No podrás revertir esto!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminarlo',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        eliminarPlan(action);
+      }
+    });
   }
   // Si es inserción (I) o nuevo
   else {
@@ -179,20 +210,36 @@ function planForm(action, id) {
   }
 }
 
-function eliminarPlan(id) {
+function aprobarPlan(id) {
   $.ajax({
     url: "/fibra-nort/planes/planes_controller.php",
     type: "POST",
-    data: {
-      op: "eliminar",
-      id: id,
-    },
+    data: { op: "aprobar", id: id },
     success: function (response) {
-      alert(response.mensaje);
-      listarPlanes();
+      if (response.estado == 1) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: response.mensaje
+        });
+        listarPlanes();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: "Error: " + response.mensaje
+        });
+      }
     },
     error: function () {
-      console.error("Error al eliminar plan");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "Error al aprobar el plan"
+      });
     },
   });
 }
+
+
+

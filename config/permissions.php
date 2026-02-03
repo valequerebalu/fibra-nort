@@ -9,33 +9,97 @@
 
 return [
     'admin' => [
-        'dashboard', 
-        'cliente', 
-        'orden', 
-        'asignacion', 
-        'planes',
-        'usuarios' // Futuro modulo
+        'modules' => [
+            'dashboard', 
+            'cliente', 
+            'orden', 
+            'asignacion', 
+            'planes',
+            'usuarios'
+        ],
+        'actions' => [
+            'planes.ver',
+            'planes.crear',
+            'planes.editar',
+            'planes.eliminar',
+            'orden.ver',
+            'orden.crear',
+            'orden.editar',
+            'orden.eliminar',
+            'cliente.ver',
+            'cliente.crear',
+            'cliente.editar',
+            'cliente.ordenes',
+            'cliente.eliminar',
+            'asignacion.ver',
+            'asignacion.crear',
+            'asignacion.editar',
+            'asignacion.eliminar',
+            'usuarios.ver',
+            'usuarios.crear',
+            'usuarios.editar',
+            'usuarios.eliminar'
+        ]
     ],
     
     'supervisor' => [
-        'dashboard', 
-        'cliente', 
-        'asignacion',
-        'planes'
+        'modules' => [
+            'dashboard', 
+            'cliente', 
+            'asignacion',
+            'planes'
+        ],
+        'actions' => [
+            'cliente.ver',
+            'asignacion.ver',
+            'asignacion.asignar',
+            'asignacion.reasignar',
+            'planes.ver',
+            'planes.aprobar'
+        
+        ]
     ],
     
     'vendedor' => [
-        'dashboard', 
-        'cliente', 
-        'orden',
-        'planes'
+        'modules' => [
+            'dashboard', 
+            'cliente', 
+            'orden',
+            'planes'
+        ],
+        'actions' => [
+            'cliente.ver',
+            'cliente.crear',
+            'cliente.editar',
+            'cliente.eliminar',
+            'cliente.ordenes',
+            'orden.ver',
+            'orden.crear',
+            'orden.editar',
+            'orden.eliminar',
+            'planes.ver',
+            'planes.crear',
+            'planes.editar',
+            'planes.eliminar'
+        ]
     ],
     
     'tecnico' => [
-        'dashboard', 
-        'asignacion' 
+        'modules' => [
+            'dashboard', 
+            'asignacion'
+        ],
+        'actions' => [
+            'asignacion.ver_mis_ordenes',
+            'asignacion.aceptar',
+            'asignacion.rechazar',
+
+        ]
     ],
     
     // Rol por defecto si algo falla
-    'guest' => ['dashboard']
+    'guest' => [
+        'modules' => ['dashboard'],
+        'actions' => []
+    ]
 ];
