@@ -46,4 +46,53 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para Rechazar Orden -->
+<div class="modal fade" id="modal_rechazar_orden" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form_rechazar_orden" method="POST">
+
+                <div class="modal-header bg-danger">
+                    <h4 class="modal-title"><i class="fa fa-times-circle"></i> Rechazar Orden</h4>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle"></i> 
+                        <strong>Atención:</strong> Está a punto de rechazar esta orden. Por favor, indique el motivo.
+                    </div>
+
+                    <div class="form-group">
+                        <label for="motivo_rechazo"><strong>Motivo del Rechazo <span class="text-danger">*</span></strong></label>
+                        <textarea 
+                            id="motivo_rechazo" 
+                            name="motivo_rechazo" 
+                            class="form-control" 
+                            rows="4" 
+                            placeholder="Ingrese el motivo del rechazo..."
+                            required
+                            maxlength="500"></textarea>
+                        <small class="form-text text-muted">Máximo 500 caracteres</small>
+                    </div>
+
+                    <input type="hidden" id="rechazo_orden_id" name="orden_id" value="">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fa fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-ban"></i> Rechazar Orden
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="/fibra-nort/asignacion/asignacion_form.js"></script>

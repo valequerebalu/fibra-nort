@@ -34,7 +34,9 @@ if (!AccessControl::canAccess($view)) {
     require_once __DIR__ . '/../templates/navbar.php';
     require_once __DIR__ . '/../templates/sidebar.php';
     echo '<div class="content-wrapper">
+  
             <section class="content">
+                
                 <div class="error-page">
                     <h2 class="headline text-warning"> 403</h2>
                     <div class="error-content">

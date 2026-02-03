@@ -8,7 +8,7 @@ $objOrden = new Orden();
 ?>
 
 <section class="content-header">
-    <div class="row align-items-center">
+    <div class="row align-items-center" style="margin: 15px;" class="container">
         <div class="col-sm-6">
             <h1><i class="fa fa-tasks text-primary"></i> Ordenes</h1>
             <h3 id="titulo_orden" style="color: #666; margin-top: 10px;">Listado de ordenes de Venta</h3>

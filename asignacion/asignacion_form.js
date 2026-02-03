@@ -42,3 +42,64 @@ $(document).on("submit", "#form_asignacion_tecnico", function (e) {
     },
   });
 });
+
+// Manejar el formulario de rechazo
+$(document).off("submit", "#form_rechazar_orden");
+$(document).on("submit", "#form_rechazar_orden", function (e) {
+  e.preventDefault();
+
+  const formData = {
+    op: "rechazar_orden",
+    orden_id: $("#rechazo_orden_id").val(),
+    motivo_rechazo: $("#motivo_rechazo").val().trim(),
+  };
+
+  // Validar que el motivo no esté vacío
+  if (!formData.motivo_rechazo) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Campo requerido',
+      text: 'Por favor, ingrese el motivo del rechazo',
+      showConfirmButton: true
+    });
+    return;
+  }
+
+  $.ajax({
+    url: "/fibra-nort/asignacion/asignacion_controller.php",
+    type: "POST",
+    data: formData,
+    dataType: "json",
+    success: function (response) {
+      if (response.estado === 1) {
+        // Cerrar modal
+        $("#modal_rechazar_orden").modal("hide");
+        // Recargar la tabla
+        listarAsignaciones();
+        Swal.fire({
+          icon: 'success',
+          title: 'Orden rechazada',
+          text: response.mensaje,
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.mensaje,
+          showConfirmButton: true
+        });
+      }
+    },
+    error: function (xhr, status, error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "Error en la solicitud: " + error,
+        showConfirmButton: true
+      });
+      console.error("Error en la petición:", error);
+    },
+  });
+});

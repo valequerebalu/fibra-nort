@@ -45,7 +45,8 @@ switch ($operacion) {
 
     case 'rechazar_orden':
         $orden_id = $_POST['orden_id'] ?? 0;
-        $resultado = $objAsignacion->rechazar_orden($orden_id);
+        $motivo_rechazo = $_POST['motivo_rechazo'] ?? '';
+        $resultado = $objAsignacion->rechazar_orden($orden_id, $motivo_rechazo);
         header('Content-Type: application/json');
         echo json_encode($resultado);
         break;

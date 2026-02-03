@@ -53,6 +53,10 @@ function cargarModalAsignacion(action, id) {
             }
             else {
                 $("#titulo_asignacion").text("Reasignar Técnico");
+                setTimeout(function () {
+                $("#modal_rechazar_orden").modal("show");
+
+            }, 100);
             }
             setTimeout(function () {
                 $("#modal_asignacion_tecnico").modal("show");
@@ -115,48 +119,8 @@ function aceptarOrden(id) {
 }
 
 function rechazarOrden(id) {
-    Swal.fire({
-        title: '¿Rechazar orden?',
-        text: "La orden cambiará a estado 'RECHAZADA'",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, rechazar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: "/fibra-nort/asignacion/asignacion_controller.php",
-                type: "POST",
-                data: { op: "rechazar_orden", orden_id: id },
-                dataType: "json",
-                success: function (response) {
-                    if (response.estado == 1) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Éxito',
-                            text: response.mensaje,
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                        listarAsignaciones();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: response.mensaje
-                        });
-                    }
-                },
-                error: function (xhr, status, error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: "Error en la solicitud: " + error
-                    });
-                }
-            });
-        }
-    });
+    // Abrir el modal de rechazo
+    $('#rechazo_orden_id').val(id);
+    $('#motivo_rechazo').val('');
+    $('#modal_rechazar_orden').modal('show');
 }

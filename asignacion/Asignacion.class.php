@@ -1,18 +1,18 @@
-<?php 
+<?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/fibra-nort/core/Database.php';
 
-class Asignacion 
+class Asignacion
 {
     private $db;
 
-    public function __construct() 
+    public function __construct()
     {
         $this->db = Database::getConnection();
     }
 
-    public function listar_asignaciones($technician_id = null) 
+    public function listar_asignaciones($technician_id = null)
     {
-         try {
+        try {
             $sql = "SELECT
                         o.id,
                         o.code_service_orders AS code_orders,
@@ -41,7 +41,7 @@ class Asignacion
             if ($technician_id) {
                 $sentencia->bindParam(':technician_id', $technician_id, PDO::PARAM_INT);
             }
-            
+
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
@@ -58,7 +58,7 @@ class Asignacion
         }
     }
 
-    public function obtener_orden($id) 
+    public function obtener_orden($id)
     {
         try {
             $sql = "SELECT
@@ -84,7 +84,7 @@ class Asignacion
         }
     }
 
-    public function listar_tecnicos() 
+    public function listar_tecnicos()
     {
         try {
             $sql = "SELECT id, name, email 
@@ -101,7 +101,7 @@ class Asignacion
         }
     }
 
-    public function asignar_tecnico($orden_id, $technician_id) 
+    public function asignar_tecnico($orden_id, $technician_id)
     {
         try {
             $sql = "UPDATE service_orders 
@@ -132,10 +132,24 @@ class Asignacion
             ];
         }
     }
-    public function aceptar_orden($orden_id) 
+    public function aceptar_orden($orden_id)
     {
         try {
-      
+            // Obtener datos de la orden
+            $sqlOrden = "SELECT technician_id FROM service_orders WHERE id = :orden_id AND status = 1";
+            $stmtOrden = $this->db->prepare($sqlOrden);
+            $stmtOrden->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+            $stmtOrden->execute();
+            $orden = $stmtOrden->fetch(PDO::FETCH_ASSOC);
+
+            if (!$orden) {
+                return [
+                    "estado" => 0,
+                    "mensaje" => "Orden no encontrada"
+                ];
+            }
+
+            // Actualizar estado de la orden
             $sql = "UPDATE service_orders 
                     SET order_states_id = 5 
                     WHERE id = :orden_id AND status = 1";
@@ -145,6 +159,21 @@ class Asignacion
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
+                // Insertar en service_order_detail
+                $sqlDetail = "INSERT INTO service_order_detail 
+                             (service_order_id, technician_id, order_state_id, assigned_at, responded_at, response_note)
+                             VALUES 
+                             (:service_order_id, :technician_id, 5, NOW(), NOW(), :response_note)";
+
+                $stmtDetail = $this->db->prepare($sqlDetail);
+                $stmtDetail->bindParam(':service_order_id', $orden_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':technician_id', $orden['technician_id'], PDO::PARAM_INT);
+                $order_state_id = 5; // Estado: Aceptada
+                $stmtDetail->bindParam(':order_state_id', $order_state_id, PDO::PARAM_INT);
+                $response_note = 'Orden aceptada por el técnico';
+                $stmtDetail->bindParam(':response_note', $response_note, PDO::PARAM_STR);
+                $stmtDetail->execute();
+
                 return [
                     "estado" => 1,
                     "mensaje" => "Orden aceptada correctamente"
@@ -163,10 +192,24 @@ class Asignacion
         }
     }
 
-    public function rechazar_orden($orden_id) 
+    public function rechazar_orden($orden_id, $motivo_rechazo)
     {
         try {
-      
+            // Obtener datos de la orden
+            $sqlOrden = "SELECT technician_id, order_states_id FROM service_orders WHERE id = :orden_id AND status = 1";
+            $stmtOrden = $this->db->prepare($sqlOrden);
+            $stmtOrden->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+            $stmtOrden->execute();
+            $orden = $stmtOrden->fetch(PDO::FETCH_ASSOC);
+
+            if (!$orden) {
+                return [
+                    "estado" => 0,
+                    "mensaje" => "Orden no encontrada"
+                ];
+            }
+
+            // Actualizar estado de la orden
             $sql = "UPDATE service_orders 
                     SET order_states_id = 6 
                     WHERE id = :orden_id AND status = 1";
@@ -176,6 +219,22 @@ class Asignacion
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
+                // Insertar en service_order_detail
+                $sqlDetail = "INSERT INTO service_order_detail 
+                             (service_order_id, technician_id, order_state_id, assigned_at, responded_at, assigned_by, response_note)
+                             VALUES 
+                             (:service_order_id, :technician_id, :order_state_id, NOW(), NOW(), :assigned_by, :response_note)";
+                
+                $stmtDetail = $this->db->prepare($sqlDetail);
+                $stmtDetail->bindParam(':service_order_id', $orden_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':technician_id', $orden['technician_id'], PDO::PARAM_INT);
+                $order_state_id = 6; // Estado: Rechazada
+                $stmtDetail->bindParam(':order_state_id', $order_state_id, PDO::PARAM_INT);
+                $assigned_by = $_SESSION['user_id'] ?? null;
+                $stmtDetail->bindParam(':assigned_by', $assigned_by, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':response_note', $motivo_rechazo, PDO::PARAM_STR);
+                $stmtDetail->execute();
+
                 return [
                     "estado" => 1,
                     "mensaje" => "Orden rechazada correctamente"
