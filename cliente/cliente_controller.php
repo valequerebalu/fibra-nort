@@ -32,7 +32,7 @@ switch ($operacion) {
                 'estado' => 0,
                 'mensaje' => 'ID de cliente no especificado'
             ]);
-            break;
+            exit;
         }
 
         $cliente = $objCliente->obtener_por_id($id);
@@ -50,6 +50,7 @@ switch ($operacion) {
                 'mensaje' => 'Cliente no encontrado'
             ]);
         }
+        exit;
         break;
 
     case 'insertar':
@@ -71,34 +72,51 @@ switch ($operacion) {
         $created_by = $_SESSION['user_id'] ; // ID del usuario de la sesión
 
         // Llamamos al método insertar con los datos reales
-        $res = $objCliente->insertar(
-            $document_type_id,
-            $document_number,
-            $name_or_company_name,
-            $maternal_surname,
-            $paternal_surname,
-            $sex,
-            $phone,
-            $date_birth,
-            $email,
-            $address,
-            $reference,
-            $state_id,
-            $created_by
-        );
+        try {
+            $res = $objCliente->insertar(
+                $document_type_id,
+                $document_number,
+                $name_or_company_name,
+                $maternal_surname,
+                $paternal_surname,
+                $sex,
+                $phone,
+                $date_birth,
+                $email,
+                $address,
+                $reference,
+                $state_id,
+                $created_by
+            );
 
-        header('Content-Type: application/json');
-        if ($res) {
-            echo json_encode([
-                'estado' => 1,
-                'mensaje' => 'Cliente insertado correctamente'
-            ]);
-        } else {
-            echo json_encode([
-                'estado' => 0,
-                'mensaje' => 'Error al insertar el cliente'
-            ]);
+            header('Content-Type: application/json');
+            if ($res) {
+                echo json_encode([
+                    'estado' => 1,
+                    'mensaje' => 'Cliente insertado correctamente',
+                    'id' => $res
+                ]);
+            } else {
+                echo json_encode([
+                    'estado' => 0,
+                    'mensaje' => 'Error al insertar el cliente'
+                ]);
+            }
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            if (strpos($e->getMessage(), 'uq_clients_document') !== false || strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                echo json_encode([
+                    'estado' => 0,
+                    'mensaje' => 'Ya existe un cliente registrado con ese tipo y número de documento'
+                ]);
+            } else {
+                echo json_encode([
+                    'estado' => 0,
+                    'mensaje' => 'Error al insertar el cliente: ' . $e->getMessage()
+                ]);
+            }
         }
+        exit;
         break;
 
     case 'editar':
@@ -111,7 +129,7 @@ switch ($operacion) {
                 'estado' => 0,
                 'mensaje' => 'ID de cliente no especificado'
             ]);
-            break;
+            exit;
         }
 
         // Capturamos los datos del POST
@@ -132,35 +150,51 @@ switch ($operacion) {
         $updated_by = $_SESSION['user_id'] ; // ID del usuario de la sesión
 
         // Llamamos al método editar con los datos reales
-        $res = $objCliente->editar(
-            $id,
-            $document_type_id,
-            $document_number,
-            $name_or_company_name,
-            $maternal_surname,
-            $paternal_surname,
-            $sex,
-            $phone,
-            $date_birth,
-            $email,
-            $address,
-            $reference,
-            $state_id,
-            $updated_by
-        );
+        try {
+            $res = $objCliente->editar(
+                $id,
+                $document_type_id,
+                $document_number,
+                $name_or_company_name,
+                $maternal_surname,
+                $paternal_surname,
+                $sex,
+                $phone,
+                $date_birth,
+                $email,
+                $address,
+                $reference,
+                $state_id,
+                $updated_by
+            );
 
-        header('Content-Type: application/json');
-        if ($res) {
-            echo json_encode([
-                'estado' => 1,
-                'mensaje' => 'Cliente actualizado correctamente'
-            ]);
-        } else {
-            echo json_encode([
-                'estado' => 0,
-                'mensaje' => 'Error al actualizar el cliente'
-            ]);
+            header('Content-Type: application/json');
+            if ($res) {
+                echo json_encode([
+                    'estado' => 1,
+                    'mensaje' => 'Cliente actualizado correctamente'
+                ]);
+            } else {
+                echo json_encode([
+                    'estado' => 0,
+                    'mensaje' => 'Error al actualizar el cliente'
+                ]);
+            }
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            if (strpos($e->getMessage(), 'uq_clients_document') !== false || strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                echo json_encode([
+                    'estado' => 0,
+                    'mensaje' => 'Ya existe un cliente registrado con ese tipo y número de documento'
+                ]);
+            } else {
+                echo json_encode([
+                    'estado' => 0,
+                    'mensaje' => 'Error al actualizar el cliente: ' . $e->getMessage()
+                ]);
+            }
         }
+        exit;
         break;
     case 'eliminar':
         // Obtener el ID del cliente a eliminar
@@ -172,7 +206,7 @@ switch ($operacion) {
                 'estado' => 0,
                 'mensaje' => 'ID de cliente no especificado'
             ]);
-            break;
+            exit;
         }
 
         // Llamamos al método eliminar
@@ -190,5 +224,6 @@ switch ($operacion) {
                 'mensaje' => 'Error al eliminar el cliente'
             ]);
         }
+        exit;
         break;
 }

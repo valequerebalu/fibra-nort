@@ -50,11 +50,11 @@ switch ($operacion) {
 
     case 'insertar':
         // Capturamos los datos del POST
-        $cliente_id = $_POST['id_cliente'];
-        $scheduled_date  = $_POST['scheduled_date'];
-        $scheduled_time        = $_POST['scheduled_time'];
+        $cliente_id         = $_POST['id_cliente'];
+        $scheduled_date     = $_POST['scheduled_date'];
+        $scheduled_time     = $_POST['scheduled_time'];
         $plan_id            = $_POST['plan_id'] ?? null;
-        $description            = $_POST['description'] ?? null;
+        $description        = $_POST['description'] ?? null;
 
         // Valores por defecto para la lógica de negocio
         $created_by = $_SESSION['user_id'] ; // ID del usuario de la sesión;

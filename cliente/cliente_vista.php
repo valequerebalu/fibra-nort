@@ -34,7 +34,11 @@ $objCliente = new Cliente();
 
 <div id="modal_cliente_container"></div>
 
-<script src="/fibra-nort/cliente/cliente.js"></script> 
+<div id="modal_orden_container"></div>
+
+<script src="/fibra-nort/cliente/cliente.js"></script>
+<script src="/fibra-nort/orden/orden.js"></script> 
+<script src="/fibra-nort/orden/orden_form.js"></script>
 
 
 

@@ -10,7 +10,7 @@ class Asignacion
         $this->db = Database::getConnection();
     }
 
-    public function listar_asignaciones() 
+    public function listar_asignaciones($technician_id = null) 
     {
          try {
             $sql = "SELECT
@@ -24,15 +24,24 @@ class Asignacion
                         o.scheduled_time,
                         p.name AS plan,
                         o.description,
-                        o.state,
-                        o.status AS status
+                        os.name AS status
                     FROM service_orders o
                     JOIN clients c ON o.client_id = c.id
+                    JOIN order_states os ON o.order_states_id = os.id
                     LEFT JOIN users u ON o.technician_id = u.id
                     JOIN plans p ON o.plan_id = p.id
                     WHERE o.status = 1";
 
+            if ($technician_id) {
+                $sql .= " AND o.technician_id = :technician_id";
+            }
+
             $sentencia = $this->db->prepare($sql);
+
+            if ($technician_id) {
+                $sentencia->bindParam(':technician_id', $technician_id, PDO::PARAM_INT);
+            }
+            
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
@@ -60,7 +69,7 @@ class Asignacion
                         o.technician_id,
                         o.scheduled_date,
                         o.scheduled_time,
-                        o.state
+                        o.status
                     FROM service_orders o
                     JOIN clients c ON o.client_id = c.id
                     WHERE o.id = :id AND o.status = 1";
@@ -80,7 +89,7 @@ class Asignacion
         try {
             $sql = "SELECT id, name, email 
                     FROM users 
-                    WHERE role_id = 2 AND status = 1
+                    WHERE role_id = 3 AND status = 1
                     ORDER BY name ASC";
 
             $sentencia = $this->db->prepare($sql);
@@ -97,7 +106,7 @@ class Asignacion
         try {
             $sql = "UPDATE service_orders 
                     SET technician_id = :technician_id,
-                        state = 'Asignado'
+                        order_states_id = 4
                     WHERE id = :orden_id AND status = 1";
 
             $sentencia = $this->db->prepare($sql);
@@ -115,6 +124,67 @@ class Asignacion
             return [
                 "estado" => 0,
                 "mensaje" => "No se pudo asignar el técnico"
+            ];
+        } catch (Exception $e) {
+            return [
+                "estado" => 0,
+                "mensaje" => "Error: " . $e->getMessage()
+            ];
+        }
+    }
+    public function aceptar_orden($orden_id) 
+    {
+        try {
+      
+            $sql = "UPDATE service_orders 
+                    SET order_states_id = 5 
+                    WHERE id = :orden_id AND status = 1";
+
+            $sentencia = $this->db->prepare($sql);
+            $sentencia->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+            $sentencia->execute();
+
+            if ($sentencia->rowCount() > 0) {
+                return [
+                    "estado" => 1,
+                    "mensaje" => "Orden aceptada correctamente"
+                ];
+            }
+
+            return [
+                "estado" => 0,
+                "mensaje" => "No se pudo aceptar la orden"
+            ];
+        } catch (Exception $e) {
+            return [
+                "estado" => 0,
+                "mensaje" => "Error: " . $e->getMessage()
+            ];
+        }
+    }
+
+    public function rechazar_orden($orden_id) 
+    {
+        try {
+      
+            $sql = "UPDATE service_orders 
+                    SET order_states_id = 6 
+                    WHERE id = :orden_id AND status = 1";
+
+            $sentencia = $this->db->prepare($sql);
+            $sentencia->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+            $sentencia->execute();
+
+            if ($sentencia->rowCount() > 0) {
+                return [
+                    "estado" => 1,
+                    "mensaje" => "Orden rechazada correctamente"
+                ];
+            }
+
+            return [
+                "estado" => 0,
+                "mensaje" => "No se pudo rechazar la orden"
             ];
         } catch (Exception $e) {
             return [

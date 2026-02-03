@@ -1,4 +1,5 @@
 // Inicializar cuando el modal se muestra
+$(document).off('shown.bs.modal', '#modal_registro_orden');
 $(document).on('shown.bs.modal', '#modal_registro_orden', function () {
   // Inicializar calendario para Fecha Programada solo si no está inicializado
   if (!$("#fecha_programada").data("DateTimePicker")) {
@@ -34,11 +35,22 @@ $(document).on('shown.bs.modal', '#modal_registro_orden', function () {
         close: "fa fa-times",
       },
     });
-  }       
+  }
 });
+
+// Restringir input de documento a solo números
+$(document).on("input", "#modal_registro_orden #document_number", function () {
+  this.value = this.value.replace(/[^0-9]/g, "");
+});
+
 // Submit del formulario
+$(document).off("submit", "#form_registro_orden");
 $(document).on("submit", "#form_registro_orden", function (e) {
   e.preventDefault();
+
+  if (!validateForm(this)) {
+    return;
+  }
 
   let formData = $(this).serialize();
   let modal = $("#modal_registro_orden");
@@ -56,18 +68,31 @@ $(document).on("submit", "#form_registro_orden", function (e) {
       if (response.estado == 1) {
         $("#modal_registro_orden").modal("hide");
         listarOrdenes();
-        alert(response.mensaje);
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: response.mensaje
+        });
       } else {
-        alert("Error: " + response.mensaje);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.mensaje
+        });
       }
     },
     error: function (xhr, status, error) {
-      alert("Error en la solicitud: " + error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "Error en la solicitud: " + error
+      });
     },
   });
 });
 
 function cargarDatosporDNI(dni) {
+  const $modal = $("#modal_registro_orden");
   $.ajax({
     url: "/fibra-nort/orden/orden_controller.php",
     type: "POST",
@@ -77,19 +102,25 @@ function cargarDatosporDNI(dni) {
       if (response.estado == 1) {
         let cliente = response.data;
         // Poblar los inputs del formulario con los datos del cliente
-        $("#name_or_company_name").val(cliente.name_or_company_name);
-        $("#paternal_surname").val(cliente.paternal_surname);
-        $("#maternal_surname").val(cliente.maternal_surname);
-        $("#date_birth").val(cliente.date_birth);
-        $("#id_cliente").val(cliente.id);
+        $modal.find("#name_or_company_name").val(cliente.name_or_company_name);
+        $modal.find("#paternal_surname").val(cliente.paternal_surname);
+        $modal.find("#maternal_surname").val(cliente.maternal_surname);
+        $modal.find("#date_birth").val(cliente.date_birth);
+        $modal.find("#id_cliente").val(cliente.id);
       } else {
-        console.error(
-          "Error al obtener datos del cliente por DNI: " + response.mensaje,
-        );
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: response.mensaje,
+        });
       }
     },
     error: function () {
-      console.error("Error al cargar datos del cliente por DNI");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al cargar datos del cliente por DNI",
+      });
     },
   });
 }

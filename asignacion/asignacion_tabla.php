@@ -32,19 +32,69 @@
                     <td><?php echo $asignacion['technician'] ?? '---'; ?></td>
                     <td><?php echo $asignacion['scheduled_date'] ?? '---'; ?></td>
                     <td><?php echo $asignacion['scheduled_time'] ?? '---'; ?></td>
-                    <td><?php echo $asignacion['state']; ?></td>
+                    <td class="text-center">
+                        <?php 
+                        $estado = strtoupper($asignacion['status']);
+                        $badgeClass = 'badge-secondary';
+                        $iconClass = 'fa-circle';
+                        
+                        switch ($estado) {
+                            case 'CREADO':
+                                $badgeClass = 'badge-secondary';
+                                $iconClass = 'fa-plus-circle';
+                                break;
+                            case 'ASIGNADO':
+                                $badgeClass = 'badge-warning'; 
+                                $iconClass = 'fa-user-clock';
+                                break;
+                            case 'ACEPTADA':
+                                $badgeClass = 'badge-primary'; // Azul para indicar proceso
+                                $iconClass = 'fa-tools';
+                                break;
+                            case 'RECHAZADA':
+                                $badgeClass = 'badge-danger';
+                                $iconClass = 'fa-times-circle';
+                                break;
+                            case 'APROBADO':
+                                $badgeClass = 'badge-success';
+                                $iconClass = 'fa-check-circle';
+                                break;
+                        }
+                        ?>
+                        <span class="badge badge-pill <?php echo $badgeClass; ?>" style="font-size: 0.9rem; padding: 8px 12px;">
+                            <i class="fa <?php echo $iconClass; ?> mr-1"></i> <?php echo $asignacion['status']; ?>
+                        </span>
+                    </td>
                        
                     </td>
                    
                     <td style="text-align: center;">
-                        <?php if (!empty($asignacion['technician']) && $asignacion['technician'] != '---'): ?>
-                            <button class="btn btn-xs btn-info" onclick="asignacionForm('R', <?php echo $asignacion['id']; ?>)">
-                                <i class="fa fa-sync-alt"></i> Reasignar
-                            </button>
+                        <?php 
+                        // Verificar el rol desde la sesión (iniciada en el controlador)
+                        $role_id = $_SESSION['role_id'] ?? 0;
+                        ?>
+
+                        <?php if ($role_id == 3): ?>
+                            <!-- Botón para el Técnico -->
+                            <?php if ($asignacion['status'] == 'ASIGNADO'): // Solo si está asignada ?>
+                                <button class="btn btn-xs btn-success" onclick="aceptarOrden(<?php echo $asignacion['id']; ?>)">
+                                    <i class="fa fa-check"></i> Aceptar
+                                </button>
+                                 <button class="btn btn-xs btn-danger" onclick="rechazarOrden(<?php echo $asignacion['id']; ?>)">
+                                    <i class="fa fa-times"></i> Rechazar
+                                </button>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <button class="btn btn-xs btn-success" onclick="asignacionForm('A', <?php echo $asignacion['id']; ?>)">
-                                <i class="fa fa-user-plus"></i> Asignar
-                            </button>
+                            <!-- Botones para Admin/Supervisor -->
+                            <?php if (!empty($asignacion['technician']) && $asignacion['technician'] != '---'): ?>
+                                <button class="btn btn-xs btn-info" onclick="asignacionForm('R', <?php echo $asignacion['id']; ?>)">
+                                    <i class="fa fa-sync-alt"></i> Reasignar
+                                </button>
+                            <?php else: ?>
+                                <button class="btn btn-xs btn-success" onclick="asignacionForm('A', <?php echo $asignacion['id']; ?>)">
+                                    <i class="fa fa-user-plus"></i> Asignar
+                                </button>
+                            <?php endif; ?>      
                         <?php endif; ?>                        
                     </td>
                 </tr>

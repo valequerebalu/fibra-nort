@@ -133,9 +133,16 @@ class Cliente
             $sentencia->bindParam(":user_id", $created_by, PDO::PARAM_INT);
 
             $result = $sentencia->execute();
+            
+            if ($result) {
+                // Obtener el ID del cliente recién insertado
+                $lastId = $this->db->lastInsertId();
+                $this->db->commit();
+                return $lastId;
+            }
+            
             $this->db->commit();
-
-            return $result;
+            return false;
         } catch (Exception $e) {
             $this->db->rollBack();
             throw $e;

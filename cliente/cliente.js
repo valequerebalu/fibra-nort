@@ -39,7 +39,7 @@ function cargarFormularioCliente(action, id) {
     success: function (response) {
       // Inyectamos el HTML del formulario dentro del contenedor
       $("#modal_cliente_container").html(response);
-      
+
       // Inicializar componentes del formulario (Datepicker)
       if (typeof inicializarFormularioCliente === 'function') {
         inicializarFormularioCliente();
@@ -49,17 +49,17 @@ function cargarFormularioCliente(action, id) {
       $("#modal_registro_cliente")
         .data("operacion", operacion)
         .data("id", id);
-      
+
       // Resetear o actualizar el título
       if (action === 'I') {
         $("#modal_titulo_cliente").text("Nuevo Cliente");
       }
-      
+
       $("#modal_registro_cliente").modal("show");
-      
+
       // Si es edición, cargar los datos del cliente
       if (action === 'U' && id) {
-        setTimeout(function() {
+        setTimeout(function () {
           cargarDatosCliente(id);
         }, 300);
       }
@@ -79,10 +79,10 @@ function cargarDatosCliente(id) {
     success: function (response) {
       if (response.estado == 1) {
         let cliente = response.data;
-        
+
         // Actualizar el título con el nombre del cliente
         $("#modal_titulo_cliente").text("Editando Cliente: " + cliente.code_clients + " / " + cliente.name_or_company_name);
-        
+
         // Poblar los inputs del formulario con los datos del cliente
         $("#document_type_id").val(cliente.document_type_id);
         $("#document_number").val(cliente.document_number);
@@ -107,16 +107,27 @@ function cargarDatosCliente(id) {
 
 function cliente_form(action, id) {
   console.log("Acción:", action, "ID:", id);
-  
+
   // Si es edición (U)
   if (action === 'U' && id) {
     cargarFormularioCliente('U', id);
-  } 
+  }
   // Si es eliminar (cuando se pasa solo el ID como número)
   else if (typeof action === 'number') {
-    if (confirm('¿Está seguro de eliminar este cliente?')) {
-      eliminarCliente(action);
-    }
+    Swal.fire({
+      title: '¿Estás seguro de eliminar este cliente?',
+      text: "¡No podrás revertir esto!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        eliminarCliente(action);
+      }
+    });
   }
   // Si es inserción (I) o nuevo
   else {
@@ -133,11 +144,20 @@ function eliminarCliente(id) {
       id: id,
     },
     success: function (response) {
-      alert(response.mensaje);
+      Swal.fire({
+        icon: 'success',
+        title: 'Mensaje',
+        text: response.mensaje
+      });
+
       listarClientes();
     },
     error: function () {
-      console.error("Error al eliminar cliente");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al eliminar cliente'
+      });
     },
   });
 }

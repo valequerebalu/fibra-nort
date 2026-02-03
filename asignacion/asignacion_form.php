@@ -4,7 +4,7 @@
             <form id="form_asignacion_tecnico" method="POST">
 
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title"><i class="fa fa-user-check"></i> Asignar Técnico - <span id="codigo_orden"><?php echo $orden_data['code_orders'] ?? 'ORD-000'; ?></span></h4>
+                    <h4 class="modal-title" id="titulo_asignacion"><i class="fa fa-user-check"></i> Asignar Técnico - <span id="codigo_orden"><?php echo $orden_data['code_orders'] ?? 'ORD-000'; ?></span></h4>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

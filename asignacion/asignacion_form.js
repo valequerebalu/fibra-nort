@@ -1,4 +1,5 @@
 // Usar delegación de eventos ya que el formulario se carga dinámicamente
+$(document).off("submit", "#form_asignacion_tecnico");
 $(document).on("submit", "#form_asignacion_tecnico", function (e) {
   e.preventDefault();
 
@@ -19,9 +20,21 @@ $(document).on("submit", "#form_asignacion_tecnico", function (e) {
         $("#modal_asignacion_tecnico").modal("hide");
         // Recargar la tabla
         listarAsignaciones();
-        alert(response.mensaje);
+        Swal.fire({
+          icon: 'success',
+          title: 'Asignación exitosa',
+          text: response.mensaje,
+          showConfirmButton: false,
+          timer: 1500
+        });
       } else {
-        alert("Error: " + response.mensaje);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.mensaje,
+          showConfirmButton: false,
+          timer: 1500
+        });
       }
     },
     error: function (xhr, status, error) {

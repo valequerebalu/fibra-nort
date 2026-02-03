@@ -15,9 +15,9 @@
 
                             <label>DNI Cliente</label>
                             <div class="input-group">
-                                <input type="text" name="document_number" id="document_number" class="form-control">
+                                <input type="text" name="document_number" id="document_number" class="form-control" minlength="8" maxlength="12" required>
                                 <div class="input-group-append">
-                                    <button type="button" class="btn btn-primary" id="btn_buscar_cliente" onclick="cargarDatosporDNI($('#document_number').val());">
+                                    <button type="button" class="btn btn-primary" id="btn_buscar_cliente" onclick="cargarDatosporDNI($('#modal_registro_orden #document_number').val());">
                                         <i class="fa fa-search"></i> Buscar
                                     </button>
                                 </div>

@@ -11,7 +11,8 @@
 
 <!-- Fix para alineación de tablas con scroll -->
 <script src="/fibra-nort/public/assets/js/table-scroll-fix.js"></script>
-
+<script src="/fibra-nort/public/assets/js/form_validator.js"></script>
+<script src="/fibra-nort/public/assets/adminlte/plugins/sweetalert2/sweetalert2.min.js"></script>
 <!-- Scripts específicos de cada vista se cargan antes del footer -->
 
 </body>

@@ -35,7 +35,7 @@
                             <input type="text" name="maternal_surname" id="maternal_surname" class="form-control" required>
 
                             <label>Teléfono</label>
-                            <input type="text" name="phone" id="phone" class="form-control">
+                            <input type="number" name="phone" id="phone" class="form-control" required>
                             <label>Dirección</label>
                             <input type="text" name="address" id="address" class="form-control" required>
                             <label>Referencia</label>
@@ -62,14 +62,15 @@
                                 </div>
                             </div>
                             <label>Email</label>
-                            <input type="text" name="email" id="email" class="form-control" required>
+                            <input type="email" name="email" id="email" class="form-control" required>
 
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
+                    <button type="submit" name="accion" value="guardar" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
+                    <button type="submit" name="accion" value="generar_orden" class="btn btn-success"><i class="fa fa-file"></i> Generar Orden</button>
                 </div>
             </form>
         </div>

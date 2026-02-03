@@ -1,5 +1,4 @@
-// Función para inicializar componentes del formulario
-// Se debe llamar CADA VEZ que se carga el formulario en el modal
+
 function inicializarFormularioCliente() {
   // Inicializar calendario para Fecha Nacimiento
   $("#fecha_nacimiento").datetimepicker({
@@ -24,25 +23,35 @@ $(document).on("change", "#document_type_id", function () {
 
   inputDoc.val("");
 
-  if (tipoDoc == "1") {
+  if (tipoDoc == "2") {
     inputDoc.attr("maxlength", "8");
+    inputDoc.data("exact-length", 8); // Para el validador
     inputDoc.attr("placeholder", "Ingrese 8 dígitos");
-  } else if (tipoDoc == "2") {
+  } else if (tipoDoc == "1") {
     inputDoc.attr("maxlength", "11");
+    inputDoc.data("exact-length", 11); // Para el validador
     inputDoc.attr("placeholder", "Ingrese 11 dígitos");
   } else {
     inputDoc.removeAttr("maxlength");
+    inputDoc.removeData("exact-length"); // Remover restricción
     inputDoc.attr("placeholder", "Ingrese documento");
   }
 });
 
-$(document).on("input", "#document_number", function () {
+$(document).on("input", "#document_number, #phone", function () {
   this.value = this.value.replace(/[^0-9]/g, "");
 });
 
 // Submit del formulario
 $(document).on("submit", "#form_registro_cliente", function (e) {
   e.preventDefault();
+
+  if (!validateForm(this)) {
+    return;
+  }
+
+  // Detectar qué botón fue presionado
+  let botonPresionado = $(document.activeElement).val();
 
   let formData = $(this).serialize();
   let modal = $("#modal_registro_cliente");
@@ -62,13 +71,47 @@ $(document).on("submit", "#form_registro_cliente", function (e) {
       if (response.estado == 1) {
         $("#modal_registro_cliente").modal("hide");
         listarClientes();
-        alert(response.mensaje);
+        Swal.fire({
+          icon: 'success',
+          title: 'Mensaje',
+          text: response.mensaje
+        });
+
+        if (botonPresionado === "generar_orden") {
+          let documentNumber = $("#modal_registro_cliente #document_number").val();
+
+          $("#modal_registro_cliente").on("hidden.bs.modal", function () {
+
+            if (typeof cargarFormularioOrden === 'function') {
+              cargarFormularioOrden('I', 0);
+            }
+            $(document).one("shown.bs.modal", "#modal_registro_orden", function () {
+              if (response.id && documentNumber) {
+                $("#modal_registro_orden #document_number").val(documentNumber);
+                if (typeof cargarDatosporDNI === 'function') {
+                  cargarDatosporDNI(documentNumber);
+                }
+              }
+            });
+
+            // Remover el event listener para evitar múltiples ejecuciones
+            $(this).off("hidden.bs.modal");
+          });
+        }
       } else {
-        alert("Error: " + response.mensaje);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.mensaje
+        });
       }
     },
     error: function (xhr, status, error) {
-      alert("Error en la solicitud: " + error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error
+      });
     },
   });
 });

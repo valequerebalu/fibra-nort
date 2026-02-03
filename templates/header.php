@@ -8,6 +8,7 @@
   <!-- AdminLTE -->
   <link rel="stylesheet" href="/fibra-nort/public/assets/adminlte/plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="/fibra-nort/public/assets/adminlte/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="/fibra-nort/public/assets/adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   
   <!-- Tempusdominus Bootstrap 4 CSS -->
   <link rel="stylesheet" href="/fibra-nort/public/assets/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">

@@ -20,8 +20,8 @@ return [
     'supervisor' => [
         'dashboard', 
         'cliente', 
-        'orden', 
-        'asignacion'
+        'asignacion',
+        'planes'
     ],
     
     'vendedor' => [
