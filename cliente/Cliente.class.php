@@ -17,8 +17,7 @@ class Cliente
             $sql = "SELECT 
                         id, 
                         code_clients, 
-                        concat(name_or_company_name, ' ', paternal_surname, ' ', maternal_surname) as full_name,
-                    
+                        concat(name_or_company_name, ' ', paternal_surname, ' ', maternal_surname) as full_name,                   
                         document_number, 
                         phone, 
                         email, 

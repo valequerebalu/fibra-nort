@@ -113,10 +113,24 @@ class Orden
             $stmt->bindParam(':created_by', $created_by);
 
             if ($stmt->execute()) {
+                $orden_id = $this->db->lastInsertId();
+                
+                // Insertar registro inicial en service_order_detail para trazabilidad
+                $sqlDetail = "INSERT INTO service_order_detail 
+                              (service_order_id, previous_state_id, order_state_id, 
+                               technician_id, action_type_id, assigned_by, assigned_at)
+                              VALUES 
+                              (:orden_id, NULL, 1, NULL, 1, :created_by, NOW())";
+                
+                $stmtDetail = $this->db->prepare($sqlDetail);
+                $stmtDetail->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':created_by', $created_by, PDO::PARAM_INT);
+                $stmtDetail->execute();
+                
                 return [
                     'estado' => 1,
                     'mensaje' => 'Orden insertada correctamente',
-                    'data' => ['orden_id' => $this->db->lastInsertId()]
+                    'data' => ['orden_id' => $orden_id]
                 ];
             } else {
                 return [

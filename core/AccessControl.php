@@ -63,4 +63,25 @@ class AccessControl {
         $allowedActions = self::$permissions[$userRole]['actions'] ?? [];
         return in_array($permission, $allowedActions);
     }
+    
+    /**
+     * Obtiene el nombre del menú para un módulo según el rol del usuario
+     */
+    public static function getModuleLabel($module) {
+        if (empty(self::$permissions)) {
+            self::load();
+        }
+
+        if (!isset($_SESSION['role'])) {
+            return ucfirst($module);
+        }
+
+        $userRole = $_SESSION['role'];
+
+        if (!isset(self::$permissions[$userRole]['menu_labels'][$module])) {
+            return ucfirst($module);
+        }
+
+        return self::$permissions[$userRole]['menu_labels'][$module];
+    }
 }

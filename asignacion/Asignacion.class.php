@@ -104,19 +104,56 @@ class Asignacion
     public function asignar_tecnico($orden_id, $technician_id)
     {
         try {
+            // Obtener estado actual antes de modificar
+            $stmtGet = $this->db->prepare("SELECT order_states_id FROM service_orders WHERE id = :orden_id");
+            $stmtGet->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+            $stmtGet->execute();
+            $orden = $stmtGet->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$orden) {
+                return [
+                    "estado" => 0,
+                    "mensaje" => "Orden no encontrada"
+                ];
+            }
+            
+            $previous_state_id = $orden['order_states_id'];
+            $new_state_id = 2; // ASIGNADO
+            $action_type_id = 2; // ASIGNACION
+            $supervisor_id = $_SESSION['user_id'];
+            
+            // Actualizar cabecera (service_orders)
             $sql = "UPDATE service_orders 
                     SET technician_id = :technician_id,
-                        order_states_id = 4,
+                        order_states_id = :new_state_id,
                         supervisor_id = :supervisor_id
                     WHERE id = :orden_id AND status = 1";
 
             $sentencia = $this->db->prepare($sql);
             $sentencia->bindParam(':technician_id', $technician_id, PDO::PARAM_INT);
+            $sentencia->bindParam(':new_state_id', $new_state_id, PDO::PARAM_INT);
             $sentencia->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
-            $sentencia->bindParam(':supervisor_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $sentencia->bindParam(':supervisor_id', $supervisor_id, PDO::PARAM_INT);
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
+                // Insertar registro de trazabilidad en service_order_detail
+                $sqlDetail = "INSERT INTO service_order_detail 
+                              (service_order_id, previous_state_id, order_state_id, 
+                               technician_id, action_type_id, assigned_by, assigned_at)
+                              VALUES 
+                              (:orden_id, :previous_state_id, :new_state_id, 
+                               :technician_id, :action_type_id, :assigned_by, NOW())";
+                
+                $stmtDetail = $this->db->prepare($sqlDetail);
+                $stmtDetail->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':previous_state_id', $previous_state_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':new_state_id', $new_state_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':technician_id', $technician_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':action_type_id', $action_type_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':assigned_by', $supervisor_id, PDO::PARAM_INT);
+                $stmtDetail->execute();
+                
                 return [
                     "estado" => 1,
                     "mensaje" => "Técnico asignado correctamente"
@@ -152,26 +189,34 @@ class Asignacion
             }
 
             // Actualizar estado de la orden
-            $sql = "UPDATE service_orders 
-                    SET order_states_id = 5 
+            $previous_state_id = 2; // ASIGNADO
+            $new_state_id = 3; // ACEPTADA
+            $action_type_id = 3; // ACEPTACION
+
+            $sql = "UPDATE service_orders
+                    SET order_states_id = :new_state_id
                     WHERE id = :orden_id AND status = 1";
 
             $sentencia = $this->db->prepare($sql);
+            $sentencia->bindParam(':new_state_id', $new_state_id, PDO::PARAM_INT);
             $sentencia->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
-                // Insertar en service_order_detail
-                $sqlDetail = "INSERT INTO service_order_detail 
-                             (service_order_id, technician_id, order_state_id, assigned_at, responded_at, assigned_by, response_note)
-                             VALUES 
-                             (:service_order_id, :technician_id, :order_state_id, NOW(), NOW(), :assigned_by, :response_note)";
+                // Insertar en service_order_detail con trazabilidad
+                $sqlDetail = "INSERT INTO service_order_detail
+                             (service_order_id, previous_state_id, order_state_id, technician_id,
+                              action_type_id, assigned_by, assigned_at, responded_at, response_note)
+                             VALUES
+                             (:service_order_id, :previous_state_id, :order_state_id, :technician_id,
+                              :action_type_id, :assigned_by, NOW(), NOW(), :response_note)";
 
                 $stmtDetail = $this->db->prepare($sqlDetail);
                 $stmtDetail->bindParam(':service_order_id', $orden_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':previous_state_id', $previous_state_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':order_state_id', $new_state_id, PDO::PARAM_INT);
                 $stmtDetail->bindParam(':technician_id', $orden['technician_id'], PDO::PARAM_INT);
-                $order_state_id = 5; // Estado: Aceptada
-                $stmtDetail->bindParam(':order_state_id', $order_state_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':action_type_id', $action_type_id, PDO::PARAM_INT);
                 $assigned_by = $orden['supervisor_id'];
                 $stmtDetail->bindParam(':assigned_by', $assigned_by, PDO::PARAM_INT);
                 $response_note = 'Orden aceptada por el técnico';
@@ -214,26 +259,34 @@ class Asignacion
             }
 
             // Actualizar estado de la orden
-            $sql = "UPDATE service_orders 
-                    SET order_states_id = 6 
+            $previous_state_id = 2; // ASIGNADO
+            $new_state_id = 4; // RECHAZADA
+            $action_type_id = 4; // RECHAZO
+
+            $sql = "UPDATE service_orders
+                    SET order_states_id = :new_state_id
                     WHERE id = :orden_id AND status = 1";
 
             $sentencia = $this->db->prepare($sql);
+            $sentencia->bindParam(':new_state_id', $new_state_id, PDO::PARAM_INT);
             $sentencia->bindParam(':orden_id', $orden_id, PDO::PARAM_INT);
             $sentencia->execute();
 
             if ($sentencia->rowCount() > 0) {
-                // Insertar en service_order_detail
-                $sqlDetail = "INSERT INTO service_order_detail 
-                             (service_order_id, technician_id, order_state_id, assigned_at, responded_at, assigned_by, response_note)
-                             VALUES 
-                             (:service_order_id, :technician_id, :order_state_id, '', NOW(), :assigned_by, :response_note)";
-                
+                // Insertar en service_order_detail con trazabilidad
+                $sqlDetail = "INSERT INTO service_order_detail
+                             (service_order_id, previous_state_id, order_state_id, technician_id,
+                              action_type_id, assigned_by, assigned_at, responded_at, response_note)
+                             VALUES
+                             (:service_order_id, :previous_state_id, :order_state_id, :technician_id,
+                              :action_type_id, :assigned_by, NOW(), NOW(), :response_note)";
+
                 $stmtDetail = $this->db->prepare($sqlDetail);
                 $stmtDetail->bindParam(':service_order_id', $orden_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':previous_state_id', $previous_state_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':order_state_id', $new_state_id, PDO::PARAM_INT);
                 $stmtDetail->bindParam(':technician_id', $orden['technician_id'], PDO::PARAM_INT);
-                $order_state_id = 6; // Estado: Rechazada
-                $stmtDetail->bindParam(':order_state_id', $order_state_id, PDO::PARAM_INT);
+                $stmtDetail->bindParam(':action_type_id', $action_type_id, PDO::PARAM_INT);
                 $assigned_by = $orden['supervisor_id'];
                 $stmtDetail->bindParam(':assigned_by', $assigned_by, PDO::PARAM_INT);
                 $stmtDetail->bindParam(':response_note', $motivo_rechazo, PDO::PARAM_STR);

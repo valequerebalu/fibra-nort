@@ -72,7 +72,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/fibra-nort/core/AccessControl.php';
                         <?php endif; ?>
 
                         <?php if (AccessControl::hasPermission('planes.aprobar') && 
-                                  ($plan['state'] ?? '') != 'APROBADO'): ?>
+                                  ($plan['plan_state_code'] ?? '') != 'APROBADO'): ?>
                             <button class="btn btn-xs btn-success" onclick="aprobarPlan(<?php echo $plan['id']; ?>)">
                                 <i class="fa fa-check"></i> Aprobar
                             </button>

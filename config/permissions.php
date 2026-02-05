@@ -12,10 +12,12 @@ return [
         'modules' => [
             'dashboard', 
             'cliente', 
-            'orden', 
-            'asignacion', 
+            'gestion', 
             'planes',
             'usuarios'
+        ],
+        'menu_labels' => [
+            'gestion' => 'Órdenes'
         ],
         'actions' => [
             'planes.ver',
@@ -46,8 +48,11 @@ return [
         'modules' => [
             'dashboard', 
             'cliente', 
-            'asignacion',
+            'gestion',
             'planes'
+        ],
+        'menu_labels' => [
+            'gestion' => 'Gestión de Asignaciones'
         ],
         'actions' => [
             'cliente.ver',
@@ -64,8 +69,11 @@ return [
         'modules' => [
             'dashboard', 
             'cliente', 
-            'orden',
+            'gestion',
             'planes'
+        ],
+        'menu_labels' => [
+            'gestion' => 'Órdenes'
         ],
         'actions' => [
             'cliente.ver',
@@ -87,7 +95,10 @@ return [
     'tecnico' => [
         'modules' => [
             'dashboard', 
-            'asignacion'
+            'gestion'
+        ],
+        'menu_labels' => [
+            'gestion' => 'Gestión de Asignaciones'
         ],
         'actions' => [
             'asignacion.ver_mis_ordenes',

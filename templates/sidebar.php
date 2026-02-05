@@ -26,20 +26,11 @@
         </li>
         <?php endif; ?>
 
-        <?php if (AccessControl::canAccess('orden')): ?>
+        <?php if (AccessControl::canAccess('gestion')): ?>
         <li class="nav-item">
-          <a href="/fibra-nort/public/?view=orden" class="nav-link">
+          <a href="/fibra-nort/public/?view=gestion" class="nav-link">
             <i class="nav-icon fas fa-tasks"></i>
-            <p>Ordenes</p>
-          </a>
-        </li>
-        <?php endif; ?>
-
-        <?php if (AccessControl::canAccess('asignacion')): ?>
-          <li class="nav-item">
-          <a href="/fibra-nort/public/?view=asignacion" class="nav-link">
-            <i class="nav-icon fas fa-user-cog"></i>
-            <p>Asignación de Técnicos</p>
+            <p><?php echo AccessControl::getModuleLabel('gestion'); ?></p>
           </a>
         </li>
         <?php endif; ?>

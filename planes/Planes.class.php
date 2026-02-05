@@ -32,11 +32,14 @@ class Planes
                                                 cp.start_date,
                                                 cp.end_date,
                                                 cp.status,
-                                                cp.state
+                                                cp.plan_state_id,
+                                                ps.code as plan_state_code,
+                                                ps.name as plan_state_name
                                             from client_plans cp
                                             inner join clients c on cp.client_id = c.id
                                             inner join plans p on cp.plan_id = p.id
                                             left join service_orders so on cp.service_order_id = so.id
+                                            left join client_plan_states ps on cp.plan_state_id = ps.id
                                             where cp.status = 1");
             $stmt->execute();
 
@@ -107,10 +110,14 @@ class Planes
         try {
             $this->db->beginTransaction();
 
-            $stmt = $this->db->prepare("INSERT INTO client_plans 
-                (client_id, plan_id, node_id, billing_day, start_date, created_by, service_order_id, invoice_type, router_serial, router_model, ip_address, mac_address, wifi_ssid, wifi_password, installed_at, status) 
-                VALUES 
-                (:client_id, :plan_id, :nodo_id, :billing_day, :start_date, :created_by, :order_id, :invoice_type, :router_serial, :router_model, :ip_address, :mac_address, :wifi_ssid, :wifi_password, :installed_at, 1)");
+            $stmt = $this->db->prepare("INSERT INTO client_plans
+                (client_id, plan_id, node_id, billing_day, start_date, created_by, service_order_id,
+                 invoice_type, router_serial, router_model, ip_address, mac_address, wifi_ssid,
+                 wifi_password, installed_at, plan_state_id, status)
+                VALUES
+                (:client_id, :plan_id, :nodo_id, :billing_day, :start_date, :created_by, :order_id,
+                 :invoice_type, :router_serial, :router_model, :ip_address, :mac_address, :wifi_ssid,
+                 :wifi_password, :installed_at, 1, 1)");
 
             $stmt->bindParam(':client_id', $client_id);
             $stmt->bindParam(':plan_id', $plan_id);
@@ -129,17 +136,14 @@ class Planes
             $stmt->bindParam(':installed_at', $installed_at);
 
             if ($stmt->execute()) {
+            // Plan insertado con plan_state_id = 1 (PENDIENTE) por defecto
+            // Ya NO actualizamos service_orders aquí (separación de responsabilidades)
+            $this->db->commit();
 
-                $stmtUpdate = $this->db->prepare("UPDATE service_orders SET order_states_id = 2 WHERE id = :order_id");
-                $stmtUpdate->bindParam(':order_id', $order_id);
-                $stmtUpdate->execute();
-
-                $this->db->commit();
-
-                return [
-                    'estado' => 1,
-                    'mensaje' => 'Plan insertado correctamente y orden actualizada.'
-                ];
+            return [
+                'estado' => 1,
+                'mensaje' => 'Plan insertado correctamente. Pendiente de aprobación.'
+            ];
             } else {
                 $this->db->rollBack();
                 return [
@@ -276,17 +280,14 @@ class Planes
                 return false; // Plan no encontrado o sin orden asociada
             }
 
-            // Actualizar estado del plan
-            $stmt = $this->db->prepare("UPDATE client_plans SET state = 'APROBADO' WHERE id = :id");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            
-            if ($stmt->execute()) {
-                // Actualizar estado de la orden con el ID correcto
-                $stmtUpdate = $this->db->prepare("UPDATE service_orders SET order_states_id = 3 WHERE id = :order_id");
-                $stmtUpdate->bindParam(':order_id', $plan['service_order_id'], PDO::PARAM_INT);
-                $stmtUpdate->execute();
-                return true;
-            }
+            // Actualizar estado del plan a APROBADO (plan_state_id = 2)
+        $stmt = $this->db->prepare("UPDATE client_plans SET plan_state_id = 2 WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        
+        if ($stmt->execute()) {
+            // Plan aprobado, ya NO actualizamos service_orders (separación de responsabilidades)
+            return true;
+        }
             return false;
         } catch (Exception $e) {
             throw $e;

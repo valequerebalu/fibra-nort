@@ -1,3 +1,6 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/fibra-nort/core/AccessControl.php';
+?>
 <table id="tabla_clientes" class="table table-bordered table-hover table-striped">
     <thead class="bg-primary">
         <tr>
@@ -44,13 +47,17 @@
                         <?php endif; ?>
                     </td>
                     <td style="text-align: center;">
+                        <?php if (AccessControl::hasPermission('cliente.editar')): ?>
                         <button class="btn btn-xs btn-warning" onclick="cliente_form('U', <?php echo $cliente['id']; ?>)">
                             <i class="fa fa-edit"></i>
                         </button>
+                        <?php endif; ?>
+                        <?php if (AccessControl::hasPermission('cliente.eliminar')): ?>
                         <button class="btn btn-xs btn-danger" onclick="cliente_form(<?php echo $cliente['id']; ?>)">
                             <i class="fa fa-trash"></i>
                         </button>
-                    </td>
+                        <?php endif; ?>
+                    </td>   
                 </tr>
             <?php }
         } else { ?>
